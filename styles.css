@@ -1,20 +1,58 @@
+/* =========================================================
+   GLOBAL
+   ========================================================= */
+
 * {
   box-sizing: border-box;
 }
 
 :root {
   color-scheme: dark;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #111318;
-  color: #f5f7fb;
+
+  --aluminum-light: #d8d5cc;
+  --aluminum-mid: #aaa79f;
+  --aluminum-dark: #77746d;
+
+  --walnut-light: #754323;
+  --walnut-mid: #4a2815;
+  --walnut-dark: #211108;
+
+  --glass: #080907;
+  --glass-light: #151713;
+
+  --amber: #d99732;
+  --amber-bright: #ffc260;
+  --amber-dim: #9e6824;
+
+  --engraved-dark: #383630;
+  --engraved-light: rgba(255, 255, 255, 0.45);
+
+  font-family:
+    "Arial Narrow",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  background: #100d0a;
+  color: #22211e;
 }
 
 body {
   min-height: 100vh;
   margin: 0;
+
   background:
-    radial-gradient(circle at top, rgba(124, 92, 255, 0.18), transparent 35rem),
-    #111318;
+    radial-gradient(
+      circle at 50% 10%,
+      rgba(218, 148, 47, 0.15),
+      transparent 34rem
+    ),
+    linear-gradient(
+      180deg,
+      #221a13 0%,
+      #100d0a 55%,
+      #080706 100%
+    );
 }
 
 button,
@@ -22,31 +60,196 @@ input {
   font: inherit;
 }
 
+/* =========================================================
+   PLAYER CONTAINER
+   ========================================================= */
+
 .player-shell {
   width: min(100% - 2rem, 900px);
   margin: 0 auto;
   padding: 2rem 0;
 }
 
+/* =========================================================
+   RECEIVER CABINET
+   ========================================================= */
+
 .player-card {
-  padding: clamp(1rem, 4vw, 2rem);
-  border: 1px solid #2c3140;
-  border-radius: 1.25rem;
-  background: rgba(24, 27, 35, 0.95);
-  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.35);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+
+  border: 2px solid #312117;
+  border-radius: 8px;
+
+  /* Ventilation slots + brushed aluminum */
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #24231f 0 3px,
+      transparent 3px 10px
+    )
+    top 12px center / calc(100% - 90px) 8px no-repeat,
+
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.07) 0 1px,
+      rgba(0, 0, 0, 0.035) 1px 2px
+    ),
+
+    linear-gradient(
+      90deg,
+      var(--aluminum-dark),
+      var(--aluminum-light) 12%,
+      var(--aluminum-mid) 50%,
+      var(--aluminum-light) 88%,
+      var(--aluminum-dark)
+    );
+
+  box-shadow:
+    0 30px 60px rgba(0, 0, 0, 0.62),
+    0 6px 10px rgba(0, 0, 0, 0.4),
+    inset 0 1px rgba(255, 255, 255, 0.75),
+    inset 0 -3px rgba(0, 0, 0, 0.35);
 }
 
+/* Keep actual player content above decorative wood panels */
+
+.player-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Walnut side panels */
+
+.player-card::before,
+.player-card::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+
+  top: 0;
+  bottom: 0;
+  width: 25px;
+
+  background:
+    repeating-linear-gradient(
+      92deg,
+      rgba(255, 255, 255, 0.045) 0 2px,
+      transparent 2px 7px
+    ),
+    linear-gradient(
+      90deg,
+      var(--walnut-dark),
+      var(--walnut-light),
+      var(--walnut-mid),
+      var(--walnut-dark)
+    );
+
+  box-shadow:
+    inset 0 0 9px rgba(0, 0, 0, 0.8),
+    0 0 0 1px #140b06;
+}
+
+.player-card::before {
+  left: 0;
+}
+
+.player-card::after {
+  right: 0;
+}
+
+/* =========================================================
+   HEADER / ANALOG METERS
+   ========================================================= */
+
 .player-header {
+  position: relative;
+
+  min-height: 118px;
   margin-bottom: 1.25rem;
+  padding: 1.4rem 290px 1.4rem 1.4rem;
+
+  border: 1px solid #646159;
+  border-radius: 3px;
+
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.055) 0 1px,
+      rgba(0, 0, 0, 0.025) 1px 2px
+    ),
+    linear-gradient(
+      90deg,
+      #99968e,
+      #d6d3ca 45%,
+      #aaa79f
+    );
+
+  box-shadow:
+    inset 0 2px 5px rgba(0, 0, 0, 0.28),
+    0 1px rgba(255, 255, 255, 0.75);
+}
+
+/* Two decorative analog meters */
+
+.player-header::before,
+.player-header::after {
+  content: "";
+  position: absolute;
+  top: 23px;
+
+  width: 112px;
+  height: 69px;
+
+  border: 5px solid #26251f;
+  border-radius: 2px;
+
+  background:
+    linear-gradient(
+      76deg,
+      transparent 48%,
+      #7a2814 49%,
+      #7a2814 51%,
+      transparent 52%
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 9px,
+      rgba(82, 52, 17, 0.65) 9px 10px
+    ),
+    linear-gradient(
+      180deg,
+      #f0c36b,
+      #b97820
+    );
+
+  box-shadow:
+    inset 0 0 10px rgba(65, 34, 7, 0.55),
+    0 1px rgba(255, 255, 255, 0.65),
+    0 3px 6px rgba(0, 0, 0, 0.25);
+}
+
+.player-header::before {
+  right: 150px;
+}
+
+.player-header::after {
+  right: 25px;
 }
 
 .eyebrow {
-  margin: 0 0 0.35rem;
-  color: #a99cff;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
+  margin: 0 0 0.4rem;
+
+  color: var(--engraved-dark);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
+
+  text-shadow: 0 1px var(--engraved-light);
 }
 
 h1,
@@ -57,77 +260,252 @@ p {
 
 h1 {
   margin-bottom: 0;
-  font-size: clamp(1.8rem, 5vw, 3rem);
+
+  color: #292823;
+  font-size: clamp(1.6rem, 4vw, 2.45rem);
+  font-weight: 700;
+  letter-spacing: 0.055em;
+
+  text-shadow:
+    0 1px rgba(255, 255, 255, 0.6),
+    0 -1px rgba(0, 0, 0, 0.35);
 }
 
+/* =========================================================
+   CRT VIDEO AREA
+   ========================================================= */
+
 .video-wrap {
+  position: relative;
   overflow: hidden;
+
   aspect-ratio: 16 / 9;
-  border-radius: 1rem;
-  background: #050608;
+
+  border: 13px solid #26251f;
+  border-radius: 17px;
+
+  background: #020302;
+
+  box-shadow:
+    inset 0 0 38px #000,
+    inset 0 0 0 2px #6d6a61,
+    0 2px rgba(255, 255, 255, 0.55),
+    0 9px 15px rgba(0, 0, 0, 0.35);
 }
 
 .video-wrap iframe {
+  position: relative;
+  z-index: 1;
+
+  display: block;
   width: 100%;
   height: 100%;
+
   border: 0;
 }
 
+/* Subtle CRT scan lines */
+
+.video-wrap::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0 3px,
+    rgba(0, 0, 0, 0.09) 3px 4px
+  );
+
+  opacity: 0.3;
+}
+
+/* Soft glass highlight */
+
+.video-wrap::before {
+  content: "";
+  position: absolute;
+  z-index: 3;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.07),
+    transparent 30%
+  );
+}
+
+/* =========================================================
+   SONG INFORMATION DISPLAY
+   ========================================================= */
+
 .track-info {
   min-height: 8.5rem;
-  padding: 1.25rem 0 0.5rem;
+  margin-top: 1.3rem;
+  padding: 1.25rem 1.4rem;
+
+  border: 5px solid #34332d;
+  border-radius: 3px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.045),
+      transparent 40%
+    ),
+    linear-gradient(
+      90deg,
+      #080907,
+      #151713 50%,
+      #080907
+    );
+
+  box-shadow:
+    inset 0 0 20px rgba(0, 0, 0, 0.9),
+    0 1px rgba(255, 255, 255, 0.6),
+    0 6px 10px rgba(0, 0, 0, 0.25);
 }
 
 .track-info h2 {
   margin-bottom: 0.45rem;
+
+  color: var(--amber-bright);
   font-size: clamp(1.35rem, 4vw, 2rem);
+  font-weight: 700;
+  letter-spacing: 0.035em;
+
+  text-shadow:
+    0 0 6px rgba(255, 183, 74, 0.6),
+    0 0 14px rgba(218, 145, 46, 0.25);
 }
 
 .track-info p {
-  color: #b9bfca;
+  color: #d4af72;
 }
 
 .status {
   margin-bottom: 0.5rem;
-  color: #8f97a8;
-  font-size: 0.9rem;
+
+  color: var(--amber);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+
+  text-shadow: 0 0 7px rgba(218, 145, 46, 0.4);
 }
+
+/* =========================================================
+   MAIN METAL PUSH BUTTONS
+   ========================================================= */
 
 .controls {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
+  gap: 0.8rem;
+
+  margin-top: 1.25rem;
 }
 
 button {
-  min-height: 3rem;
-  border: 1px solid #3a4050;
-  border-radius: 0.8rem;
-  background: #242936;
-  color: #f5f7fb;
+  min-height: 3.35rem;
+  padding: 0.75rem 1rem;
+
+  border: 1px solid #55524c;
+  border-radius: 3px;
+
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.06) 0 1px,
+      rgba(0, 0, 0, 0.025) 1px 2px
+    ),
+    linear-gradient(
+      180deg,
+      #ddd9d0 0%,
+      #aaa79f 47%,
+      #77746d 51%,
+      #b9b6ae 100%
+    );
+
+  color: #25241f;
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+
   cursor: pointer;
-  transition: transform 120ms ease, background 120ms ease;
+
+  box-shadow:
+    0 4px 0 #4b4944,
+    0 7px 9px rgba(0, 0, 0, 0.32),
+    inset 0 1px rgba(255, 255, 255, 0.9);
+
+  transition:
+    transform 100ms ease,
+    filter 100ms ease,
+    box-shadow 100ms ease;
 }
 
 button:hover:not(:disabled) {
   transform: translateY(-1px);
-  background: #303747;
+  filter: brightness(1.08);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(3px);
+
+  box-shadow:
+    0 1px 0 #44423e,
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(0, 0, 0, 0.28);
+}
+
+/* Illuminated primary button */
+
+button.primary {
+  border-color: #744914;
+
+  background:
+    linear-gradient(
+      180deg,
+      var(--amber-bright) 0%,
+      #db922c 48%,
+      #965a13 52%,
+      #d58a27 100%
+    );
+
+  color: #271605;
+  font-weight: 900;
+
+  box-shadow:
+    0 4px 0 #68400f,
+    0 0 16px rgba(226, 148, 45, 0.48),
+    inset 0 1px rgba(255, 255, 255, 0.7);
+}
+
+button.primary:hover:not(:disabled) {
+  background:
+    linear-gradient(
+      180deg,
+      #ffd078,
+      #e9a23f 48%,
+      #a5671d 52%,
+      #e49d39
+    );
 }
 
 button:focus-visible,
 input:focus-visible {
-  outline: 3px solid #a99cff;
-  outline-offset: 3px;
-}
-
-button.primary {
-  border-color: #7663ff;
-  background: #7663ff;
-  font-weight: 800;
-}
-
-button.primary:hover:not(:disabled) {
-  background: #8877ff;
+  outline: 3px solid var(--amber-bright);
+  outline-offset: 4px;
 }
 
 button:disabled,
@@ -136,30 +514,198 @@ input:disabled {
   opacity: 0.45;
 }
 
+/* =========================================================
+   LOWER CONTROL PANEL
+   ========================================================= */
+
 .secondary-controls {
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 1rem;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1.25rem;
   align-items: center;
-  margin-top: 1.25rem;
+
+  margin-top: 1.5rem;
+  padding: 1.15rem 1.25rem;
+
+  border: 1px solid #6d6a63;
+  border-radius: 3px;
+
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.055) 0 1px,
+      rgba(0, 0, 0, 0.028) 1px 2px
+    ),
+    linear-gradient(
+      90deg,
+      #908d85,
+      #c9c6bd 50%,
+      #908d85
+    );
+
+  box-shadow:
+    inset 0 2px 5px rgba(0, 0, 0, 0.28),
+    0 1px rgba(255, 255, 255, 0.7);
 }
 
 .secondary-controls label {
-  color: #c8ced8;
-  font-size: 0.9rem;
-  font-weight: 700;
+  color: var(--engraved-dark);
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+
+  text-shadow: 0 1px var(--engraved-light);
 }
+
+/* =========================================================
+   VOLUME SLIDER
+   ========================================================= */
 
 input[type="range"] {
   width: 100%;
+  height: 28px;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  background: transparent;
+}
+
+/* Chrome / Safari / Edge track */
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 7px;
+
+  border: 1px solid #393731;
+  border-radius: 2px;
+
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 15px,
+      rgba(255, 194, 96, 0.5) 15px 16px
+    ),
+    linear-gradient(
+      90deg,
+      #3c280f,
+      var(--amber),
+      #484135
+    );
+
+  box-shadow:
+    inset 0 1px 3px #000,
+    0 1px rgba(255, 255, 255, 0.5);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  width: 28px;
+  height: 28px;
+  margin-top: -11px;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  border: 1px solid #4c4a44;
+  border-radius: 50%;
+
+  background: repeating-conic-gradient(
+    from 0deg,
+    #dedbd2 0deg 3deg,
+    #85827b 3deg 6deg
+  );
+
+  box-shadow:
+    0 3px 5px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 4px #aaa79f;
+}
+
+/* Firefox track */
+
+input[type="range"]::-moz-range-track {
+  height: 7px;
+
+  border: 1px solid #393731;
+  border-radius: 2px;
+
+  background: linear-gradient(
+    90deg,
+    #3c280f,
+    var(--amber),
+    #484135
+  );
+
+  box-shadow: inset 0 1px 3px #000;
+}
+
+/* Firefox knob */
+
+input[type="range"]::-moz-range-thumb {
+  width: 27px;
+  height: 27px;
+
+  border: 1px solid #4c4a44;
+  border-radius: 50%;
+
+  background: #aaa79f;
+
+  box-shadow:
+    0 3px 5px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 4px #d5d2c9;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 760px) {
+  .player-header {
+    min-height: auto;
+    padding-right: 1.4rem;
+  }
+
+  .player-header::before,
+  .player-header::after {
+    display: none;
+  }
 }
 
 @media (max-width: 620px) {
+  .player-shell {
+    width: min(100% - 1rem, 900px);
+    padding: 0.75rem 0;
+  }
+
+  .player-card {
+    padding: 1.35rem;
+  }
+
+  .player-card::before,
+  .player-card::after {
+    width: 14px;
+  }
+
+  .video-wrap {
+    border-width: 8px;
+    border-radius: 11px;
+  }
+
   .controls {
     grid-template-columns: 1fr;
   }
 
   .track-info {
     min-height: 10rem;
+  }
+
+  .secondary-controls {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button {
+    transition: none;
   }
 }
