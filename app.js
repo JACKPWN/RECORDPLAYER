@@ -95,6 +95,51 @@ const elements = {
   trackSearch:
     document.querySelector(
       "#track-search"
+    ),
+
+  playerCard:
+    document.querySelector(
+      ".player-card"
+    ),
+
+  mediaTitle:
+    document.querySelector(
+      "#media-title"
+    ),
+
+  mediaMeta:
+    document.querySelector(
+      "#media-meta"
+    ),
+
+  bayPlay:
+    document.querySelector(
+      "#bay-play"
+    ),
+
+  volumeValue:
+    document.querySelector(
+      "#volume-value"
+    ),
+
+  bassControl:
+    document.querySelector(
+      "#bass-control"
+    ),
+
+  bassValue:
+    document.querySelector(
+      "#bass-value"
+    ),
+
+  trebleControl:
+    document.querySelector(
+      "#treble-control"
+    ),
+
+  trebleValue:
+    document.querySelector(
+      "#treble-value"
     )
 };
 
@@ -174,6 +219,270 @@ function clampVolume(value) {
 
 
 
+function getPageOrigin() {
+
+  if (
+    window.location.protocol ===
+      "http:" ||
+
+    window.location.protocol ===
+      "https:"
+  ) {
+
+    return window.location.origin;
+
+  }
+
+
+  return "https://jackpwn.github.io";
+
+}
+
+
+
+function getWidgetReferrer() {
+
+  if (
+    window.location.protocol ===
+      "http:" ||
+
+    window.location.protocol ===
+      "https:"
+  ) {
+
+    return window.location.href;
+
+  }
+
+
+  return "https://jackpwn.github.io/RECORDPLAYER/";
+
+}
+
+
+
+function setPlayerIframeIdentity() {
+
+  if (
+    !state.player ||
+    typeof state.player.getIframe !==
+      "function"
+  ) {
+
+    return;
+
+  }
+
+
+  const iframe =
+    state.player.getIframe();
+
+
+  if (!iframe) {
+
+    return;
+
+  }
+
+
+  iframe.referrerPolicy =
+    "strict-origin-when-cross-origin";
+
+
+  iframe.setAttribute(
+    "referrerpolicy",
+    "strict-origin-when-cross-origin"
+  );
+
+
+  iframe.setAttribute(
+    "allow",
+    "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  );
+
+}
+
+
+
+function clampTone(value) {
+
+  const number =
+    Number(value);
+
+
+  return Number.isFinite(number)
+    ? Math.max(
+        -10,
+        Math.min(
+          10,
+          number
+        )
+      )
+    : 0;
+
+}
+
+
+
+function formatTrackDetails(track) {
+
+  const artist =
+    track.artist ||
+    "Unknown Artist";
+
+
+  const album =
+    track.album ||
+    "Unknown Album";
+
+
+  const trackNumber =
+    track.trackNumber ??
+    "?";
+
+
+  return `${artist} — ${album} — Track ${trackNumber}`;
+
+}
+
+
+
+function signedValue(value) {
+
+  const number =
+    Number(value);
+
+
+  return number > 0
+    ? `+${number}`
+    : `${number}`;
+
+}
+
+
+
+function setKnob(
+  input,
+  valueNode,
+  formatter = (value) => value
+) {
+
+  if (
+    !input ||
+    !valueNode
+  ) {
+
+    return;
+
+  }
+
+
+  const min =
+    Number(input.min);
+
+
+  const max =
+    Number(input.max);
+
+
+  const value =
+    Number(input.value);
+
+
+  const percent =
+    (value - min) /
+    (max - min);
+
+
+  const angle =
+    -135 +
+    percent * 270;
+
+
+  const control =
+    input.closest(
+      ".knob-control"
+    );
+
+
+  if (control) {
+
+    control.style.setProperty(
+      "--knob-angle",
+      `${angle}deg`
+    );
+
+  }
+
+
+  valueNode.textContent =
+    formatter(input.value);
+
+}
+
+
+
+function syncKnobs() {
+
+  setKnob(
+    elements.bassControl,
+    elements.bassValue,
+    signedValue
+  );
+
+
+  setKnob(
+    elements.trebleControl,
+    elements.trebleValue,
+    signedValue
+  );
+
+
+  setKnob(
+    elements.volumeControl,
+    elements.volumeValue,
+    (value) => `${value}%`
+  );
+
+}
+
+
+
+function syncReceiverPlayback(
+  playing
+) {
+
+  state.isPlaying =
+    playing;
+
+
+  elements.playerCard
+    .classList
+    .toggle(
+      "is-playing",
+      playing
+    );
+
+
+  elements.playButton.textContent =
+    playing
+      ? "Pause"
+      : "Play";
+
+
+  if (elements.bayPlay) {
+
+    elements.bayPlay.textContent =
+      playing
+        ? "Pause"
+        : "Play";
+
+  }
+
+}
+
+
+
 /* =========================================================
    LOCAL STORAGE
    ========================================================= */
@@ -194,6 +503,22 @@ function loadPreferences() {
       String(
         clampVolume(
           saved.volume
+        )
+      );
+
+
+    elements.bassControl.value =
+      String(
+        clampTone(
+          saved.bass
+        )
+      );
+
+
+    elements.trebleControl.value =
+      String(
+        clampTone(
+          saved.treble
         )
       );
 
@@ -221,6 +546,14 @@ function loadPreferences() {
 
     elements.volumeControl.value =
       "70";
+
+
+    elements.bassControl.value =
+      "0";
+
+
+    elements.trebleControl.value =
+      "0";
 
   }
 
@@ -252,7 +585,21 @@ function savePreferences() {
           state.savedYoutubeId,
 
         shuffle:
-          state.shuffle
+          state.shuffle,
+
+        bass:
+          clampTone(
+            elements
+              .bassControl
+              .value
+          ),
+
+        treble:
+          clampTone(
+            elements
+              .trebleControl
+              .value
+          )
 
       })
 
@@ -325,6 +672,14 @@ function setControlsEnabled(
   elements.previousButton.disabled =
     !enabled ||
     state.history.length === 0;
+
+
+  if (elements.bayPlay) {
+
+    elements.bayPlay.disabled =
+      !enabled;
+
+  }
 
 }
 
@@ -537,28 +892,36 @@ function renderCurrentTrack(
   track
 ) {
 
+  const details =
+    formatTrackDetails(
+      track
+    );
+
+
   elements.title.textContent =
     track.title ||
     "Unknown Track";
 
 
-  const artist =
-    track.artist ||
-    "Unknown Artist";
-
-
-  const album =
-    track.album ||
-    "Unknown Album";
-
-
-  const trackNumber =
-    track.trackNumber ??
-    "?";
-
-
   elements.details.textContent =
-    `${artist} — ${album} — Track ${trackNumber}`;
+    details;
+
+
+  if (elements.mediaTitle) {
+
+    elements.mediaTitle.textContent =
+      track.title ||
+      "Unknown Track";
+
+  }
+
+
+  if (elements.mediaMeta) {
+
+    elements.mediaMeta.textContent =
+      details;
+
+  }
 
 
   setReadyStatus();
@@ -943,6 +1306,11 @@ function loadTrack(
   }
 
 
+  syncReceiverPlayback(
+    false
+  );
+
+
   if (autoplay) {
 
     state.player.loadVideoById(
@@ -971,7 +1339,9 @@ function loadTrack(
 
 function playNextTrack(
   {
-    addToHistory = true
+    addToHistory = true,
+
+    autoplay = true
   } = {}
 ) {
 
@@ -1008,7 +1378,7 @@ function playNextTrack(
 
     {
       addToHistory,
-      autoplay: true,
+      autoplay,
       scroll: true
     }
 
@@ -1051,7 +1421,7 @@ function playPreviousTrack() {
 
         {
           addToHistory: false,
-          autoplay: true,
+          autoplay: false,
           scroll: true
         }
 
@@ -1159,6 +1529,9 @@ function updateVolume() {
     String(volume);
 
 
+  syncKnobs();
+
+
   /*
    * Save even if YouTube has not
    * finished initializing yet.
@@ -1200,6 +1573,37 @@ function updateVolume() {
 
 
 
+function updateToneControls() {
+
+  elements.bassControl.value =
+    String(
+      clampTone(
+        elements
+          .bassControl
+          .value
+      )
+    );
+
+
+  elements.trebleControl.value =
+    String(
+      clampTone(
+        elements
+          .trebleControl
+          .value
+      )
+    );
+
+
+  syncKnobs();
+
+
+  savePreferences();
+
+}
+
+
+
 /* =========================================================
    YOUTUBE STATE CHANGES
    ========================================================= */
@@ -1208,15 +1612,10 @@ function handlePlayerStateChange(
   event
 ) {
 
-  state.isPlaying =
+  syncReceiverPlayback(
     event.data ===
-    YT.PlayerState.PLAYING;
-
-
-  elements.playButton.textContent =
-    state.isPlaying
-      ? "Pause"
-      : "Play";
+    YT.PlayerState.PLAYING
+  );
 
 
   /*
@@ -1335,7 +1734,7 @@ function handlePlayerError(
   ) {
 
     setReadyStatus(
-      "YouTube could not verify this embed. Refresh the page and try again."
+      "YouTube could not verify this embed. Deploy on HTTPS and refresh the page."
     );
 
     return;
@@ -1447,12 +1846,9 @@ function handlePlayerError(
 
 function handleAutoplayBlocked() {
 
-  state.isPlaying =
-    false;
-
-
-  elements.playButton.textContent =
-    "Play";
+  syncReceiverPlayback(
+    false
+  );
 
 
   setReadyStatus(
@@ -1729,13 +2125,16 @@ window.onYouTubeIframeAPIReady =
 
             rel: 0,
 
+            widget_referrer:
+              getWidgetReferrer(),
+
             /*
              * Recommended when controlling
              * the player through the JS API.
              */
 
             origin:
-              window.location.origin
+              getPageOrigin()
 
           },
 
@@ -1746,6 +2145,9 @@ window.onYouTubeIframeAPIReady =
 
               state.playerReady =
                 true;
+
+
+              setPlayerIframeIdentity();
 
 
               updateVolume();
@@ -1772,6 +2174,12 @@ window.onYouTubeIframeAPIReady =
         }
 
       );
+
+
+    window.setTimeout(
+      setPlayerIframeIdentity,
+      0
+    );
 
   };
 
@@ -1803,13 +2211,30 @@ elements.playButton
 
 
 
+if (elements.bayPlay) {
+
+  elements.bayPlay
+    .addEventListener(
+
+      "click",
+
+      togglePlayback
+
+    );
+
+}
+
+
+
 elements.nextButton
   .addEventListener(
 
     "click",
 
     () =>
-      playNextTrack()
+      playNextTrack({
+        autoplay: false
+      })
 
   );
 
@@ -1843,6 +2268,50 @@ elements.volumeControl
     "change",
 
     updateVolume
+
+  );
+
+
+
+elements.bassControl
+  .addEventListener(
+
+    "input",
+
+    updateToneControls
+
+  );
+
+
+
+elements.bassControl
+  .addEventListener(
+
+    "change",
+
+    updateToneControls
+
+  );
+
+
+
+elements.trebleControl
+  .addEventListener(
+
+    "input",
+
+    updateToneControls
+
+  );
+
+
+
+elements.trebleControl
+  .addEventListener(
+
+    "change",
+
+    updateToneControls
 
   );
 
@@ -1912,6 +2381,14 @@ elements.trackList
    ========================================================= */
 
 loadPreferences();
+
+
+syncKnobs();
+
+
+syncReceiverPlayback(
+  false
+);
 
 
 setControlsEnabled(
