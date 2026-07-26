@@ -1,218 +1,138 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>Mom&PopTunesByDom.com</title>
-
   <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
-
   <main class="player-shell">
+    <section class="player-card" aria-label="Marie and Jerry stereo receiver music player">
+      <div class="faceplate">
+        <div class="vents" aria-hidden="true"></div>
 
-    <section class="player-card" aria-labelledby="page-title">
+        <header class="tuner">
+          <div class="tuner-copy">
+            <p class="brand">M&amp;J Stereo Receiver</p>
+            <p class="deck-subtitle">1960s-1970s collection / 507 tracks loaded</p>
+          </div>
 
-      <!-- HEADER -->
+          <div class="dial-scale" aria-hidden="true">
+            <div class="scale-line"></div>
+            <div class="ticks">
+              <span class="tick"><b>88</b></span>
+              <span class="tick"></span>
+              <span class="tick"><b>92</b></span>
+              <span class="tick"></span>
+              <span class="tick"><b>96</b></span>
+              <span class="tick"></span>
+              <span class="tick"><b>100</b></span>
+              <span class="tick"></span>
+              <span class="tick"><b>104</b></span>
+              <span class="tick"></span>
+              <span class="tick"><b>108</b></span>
+            </div>
+            <div class="dial-pointer"></div>
+          </div>
+        </header>
 
-      <header class="player-header">
+        <div class="receiver-grid">
+          <section class="meters" aria-label="VU meters">
+            <div class="vu">
+              <div class="vu-scale"><span>0</span><span>1</span><span>3</span><span>5</span><span>10</span><span>50</span><span>100</span></div>
+              <div class="needle" aria-hidden="true"></div>
+              <div class="vu-label">Left</div>
+            </div>
 
-        <div class="header-copy">
+            <div class="vu">
+              <div class="vu-scale"><span>0</span><span>1</span><span>3</span><span>5</span><span>10</span><span>50</span><span>100</span></div>
+              <div class="needle" aria-hidden="true"></div>
+              <div class="vu-label">Right</div>
+            </div>
+          </section>
 
-          <p class="eyebrow">
-            1960s–1970s Collection
-          </p>
+          <section class="media-bay" aria-label="YouTube player bay">
+            <div class="video-wrap">
+              <div id="youtube-player"></div>
+            </div>
 
-          <h1 id="page-title">
-            Marie & Jerry's Vinyl Player
-          </h1>
+            <div class="media-copy">
+              <h1 id="media-title">Marie &amp; Jerry's Vinyl Player</h1>
+              <p id="media-meta">Loading your record...</p>
+              <button class="play-badge" id="bay-play" type="button" disabled>Play</button>
+            </div>
+          </section>
 
+          <section class="track-info" aria-live="polite">
+            <p id="status" class="status">Loading your record...</p>
+            <h2 id="track-title">Song goes here.</h2>
+            <p id="track-details">Artist and album will appear here.</p>
+          </section>
+
+          <section class="track-browser" aria-labelledby="library-title">
+            <div class="track-browser-header">
+              <h2 id="library-title">Record Library</h2>
+              <span id="track-count">0 tracks</span>
+            </div>
+
+            <label class="visually-hidden" for="track-search">Search record library</label>
+            <input
+              id="track-search"
+              type="search"
+              placeholder="Search record library"
+              autocomplete="off"
+              spellcheck="false"
+            >
+
+            <div id="track-list" class="track-list" aria-label="Available tracks"></div>
+          </section>
+
+          <nav class="controls" aria-label="Music controls">
+            <button id="previous-button" type="button" disabled>Prev</button>
+            <button id="play-button" class="primary" type="button" disabled>Play</button>
+            <button id="next-button" type="button" disabled>Next</button>
+            <button id="shuffle-button" class="shuffle-toggle is-on" type="button" aria-pressed="true" disabled>Shuffle</button>
+          </nav>
+
+          <section class="knob-bank" aria-label="Tone and volume controls">
+            <div class="knob-control tone-control" data-control="bass">
+              <div class="knob" aria-hidden="true"></div>
+              <label class="knob-label" for="bass-control">Bass</label>
+              <span class="knob-value" id="bass-value">0</span>
+              <input class="knob-range" id="bass-control" type="range" min="-10" max="10" step="1" value="0">
+            </div>
+
+            <div class="knob-control tone-control" data-control="treble">
+              <div class="knob" aria-hidden="true"></div>
+              <label class="knob-label" for="treble-control">Treble</label>
+              <span class="knob-value" id="treble-value">0</span>
+              <input class="knob-range" id="treble-control" type="range" min="-10" max="10" step="1" value="0">
+            </div>
+
+            <div class="knob-control" data-control="volume">
+              <div class="knob" aria-hidden="true"></div>
+              <label class="knob-label" for="volume-control">Volume</label>
+              <span class="knob-value" id="volume-value">70%</span>
+              <input
+                class="knob-range"
+                id="volume-control"
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                value="70"
+                aria-label="Volume"
+              >
+            </div>
+          </section>
         </div>
-
-
-        <div class="meter-images" aria-hidden="true">
-
-          <img
-            src="images/meter-left.png"
-            alt=""
-            class="meter-image"
-          >
-
-          <img
-            src="images/meter-right.png"
-            alt=""
-            class="meter-image"
-          >
-
-        </div>
-
-      </header>
-
-
-      <!-- YOUTUBE PLAYER -->
-
-      <div class="video-wrap">
-        <div id="youtube-player"></div>
       </div>
-
-
-      <!-- CURRENT TRACK -->
-
-      <section
-        class="track-info"
-        aria-live="polite"
-      >
-
-        <p
-          id="status"
-          class="status"
-        >
-          Loading your record…
-        </p>
-
-        <h2 id="track-title">
-          Song goes here.
-        </h2>
-
-        <p id="track-details">
-          Artist and album will appear here.
-        </p>
-
-      </section>
-
-
-      <!-- MAIN CONTROLS -->
-
-      <div
-        class="controls"
-        aria-label="Music controls"
-      >
-
-        <button
-          id="previous-button"
-          type="button"
-          disabled
-        >
-          Previous
-        </button>
-
-
-        <button
-          id="play-button"
-          class="primary"
-          type="button"
-          disabled
-        >
-          Play
-        </button>
-
-
-        <button
-          id="next-button"
-          type="button"
-          disabled
-        >
-          Next
-        </button>
-
-
-        <button
-          id="shuffle-button"
-          class="shuffle-toggle"
-          type="button"
-          aria-pressed="true"
-          disabled
-        >
-          Shuffle: On
-        </button>
-
-      </div>
-
-
-      <!-- VOLUME -->
-
-      <div class="secondary-controls">
-
-        <label for="volume-control">
-          Volume
-        </label>
-
-        <input
-          id="volume-control"
-          type="range"
-          min="0"
-          max="100"
-          step="1"
-          value="70"
-          aria-label="Volume"
-        >
-
-      </div>
-
-
-      <!-- RECORD LIBRARY -->
-
-      <section
-        class="track-browser"
-        aria-labelledby="library-title"
-      >
-
-        <div class="track-browser-header">
-
-          <h2 id="library-title">
-            Record Library
-          </h2>
-
-          <span id="track-count">
-            0 tracks
-          </span>
-
-        </div>
-
-
-        <div class="track-search-wrap">
-
-          <label
-            class="visually-hidden"
-            for="track-search"
-          >
-            Search record library
-          </label>
-
-          <input
-            id="track-search"
-            type="search"
-            placeholder="Search artist, album or song..."
-            autocomplete="off"
-            spellcheck="false"
-          >
-
-        </div>
-
-
-        <div
-          id="track-list"
-          class="track-list"
-          aria-label="Available tracks"
-        ></div>
-
-      </section>
-
     </section>
-
   </main>
 
-
-  <!--
-    Load our code first so the YouTube-ready callback
-    already exists when Google's API finishes loading.
-  -->
-
   <script src="app.js"></script>
-
-  <script src="https://www.youtube.com/iframe_api"></script>
-
+  <script src="https://www.youtube.com/iframe_api" referrerpolicy="strict-origin-when-cross-origin"></script>
 </body>
 </html>
