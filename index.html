@@ -58,10 +58,11 @@
               <div id="youtube-player"></div>
             </div>
 
-            <div class="media-copy">
-              <h1 id="media-title">Marie &amp; Jerry's Vinyl Player</h1>
-              <p id="media-meta">Loading your record...</p>
-              <button class="play-badge" id="bay-play" type="button" disabled>Play</button>
+            <div class="decorative-knobs" aria-hidden="true">
+              <span class="silver-knob"></span>
+              <span class="silver-knob"></span>
+              <span class="silver-knob"></span>
+              <span class="silver-knob"></span>
             </div>
           </section>
 
@@ -96,36 +97,17 @@
             <button id="shuffle-button" class="shuffle-toggle is-on" type="button" aria-pressed="true" disabled>Shuffle</button>
           </nav>
 
-          <section class="knob-bank" aria-label="Tone and volume controls">
-            <div class="knob-control tone-control" data-control="bass">
-              <div class="knob" aria-hidden="true"></div>
-              <label class="knob-label" for="bass-control">Bass</label>
-              <span class="knob-value" id="bass-value">0</span>
-              <input class="knob-range" id="bass-control" type="range" min="-10" max="10" step="1" value="0">
-            </div>
-
-            <div class="knob-control tone-control" data-control="treble">
-              <div class="knob" aria-hidden="true"></div>
-              <label class="knob-label" for="treble-control">Treble</label>
-              <span class="knob-value" id="treble-value">0</span>
-              <input class="knob-range" id="treble-control" type="range" min="-10" max="10" step="1" value="0">
-            </div>
-
-            <div class="knob-control" data-control="volume">
-              <div class="knob" aria-hidden="true"></div>
-              <label class="knob-label" for="volume-control">Volume</label>
-              <span class="knob-value" id="volume-value">70%</span>
-              <input
-                class="knob-range"
-                id="volume-control"
-                type="range"
-                min="0"
-                max="100"
-                step="1"
-                value="70"
-                aria-label="Volume"
-              >
-            </div>
+          <section class="volume-panel" aria-label="Volume control">
+            <label for="volume-control">Volume</label>
+            <input
+              id="volume-control"
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value="70"
+            >
+            <span id="volume-value">70%</span>
           </section>
         </div>
       </div>
