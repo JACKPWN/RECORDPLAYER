@@ -35,6 +35,8 @@ const state = {
 
   isPlaying: false,
 
+  currentTrackStarted: false,
+
   shuffle: true,
 
   savedYoutubeId: null,
@@ -271,6 +273,18 @@ function setPlayerIframeIdentity() {
   iframe.setAttribute(
     "allow",
     "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  );
+
+
+  iframe.setAttribute(
+    "allowfullscreen",
+    ""
+  );
+
+
+  iframe.setAttribute(
+    "playsinline",
+    "1"
   );
 
 }
@@ -1260,6 +1274,10 @@ function loadTrack(
   );
 
 
+  state.currentTrackStarted =
+    false;
+
+
   if (autoplay) {
 
     state.player.loadVideoById(
@@ -1424,6 +1442,26 @@ function togglePlayback() {
   } else {
 
     state.player.playVideo();
+    const track =
+      state.tracks[
+        state.currentIndex
+      ];
+
+
+    if (
+      track &&
+      !state.currentTrackStarted
+    ) {
+
+      state.player.loadVideoById(
+        track.youtubeId
+      );
+
+    } else {
+
+      state.player.playVideo();
+
+    }
 
   }
 
@@ -1553,6 +1591,10 @@ function handlePlayerStateChange(
     event.data ===
     YT.PlayerState.PLAYING
   ) {
+
+    state.currentTrackStarted =
+      true;
+
 
     state.consecutiveErrors =
       0;
