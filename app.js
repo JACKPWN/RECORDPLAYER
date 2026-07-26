@@ -318,9 +318,6 @@ function getInitialEmbedVideoId() {
 
 
 
-function createYouTubeIframe(
-  youtubeId
-) {
 function resetYouTubeMount() {
 
   const currentNode =
@@ -329,98 +326,51 @@ function resetYouTubeMount() {
     );
 
 
-  if (!currentNode) {
-
-    return null;
-
-  }
-
-
-  const parameters =
-    new URLSearchParams({
-      enablejsapi: "1",
-      controls: "1",
-      playsinline: "1",
-      rel: "0",
-      origin: getPageOrigin(),
-      widget_referrer: getWidgetReferrer()
-    });
-
-
-  const iframe =
-    document.createElement(
-      "iframe"
   const wrap =
     document.querySelector(
       ".video-wrap"
     );
 
 
-  iframe.id =
-    "youtube-player";
   if (!currentNode) {
 
     if (wrap) {
 
-  iframe.title =
-    "YouTube music player";
       const mount =
         document.createElement(
           "div"
         );
 
 
-  iframe.width =
-    "100%";
       mount.id =
         "youtube-player";
 
 
-  iframe.height =
-    "100%";
       wrap.appendChild(
         mount
       );
 
     }
 
-  iframe.src =
-    `https://www.youtube.com/embed/${youtubeId}?${parameters}`;
 
     return;
 
-  iframe.allow =
-    "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
   }
 
 
-  iframe.allowFullscreen =
-    true;
   const mount =
     document.createElement(
       "div"
     );
 
 
-  iframe.referrerPolicy =
-    "strict-origin-when-cross-origin";
   mount.id =
     "youtube-player";
 
 
-  iframe.setAttribute(
-    "referrerpolicy",
-    "strict-origin-when-cross-origin"
-  );
-
-
   currentNode.replaceWith(
-    iframe
     mount
   );
-
-
-  return iframe;
 
 }
 
@@ -1441,7 +1391,6 @@ function togglePlayback() {
 
   } else {
 
-    state.player.playVideo();
     const track =
       state.tracks[
         state.currentIndex
@@ -1751,7 +1700,6 @@ function handlePlayerError(
 
 
     setReadyStatus(
-      "YouTube could not verify this embed. Deploy on HTTPS and refresh the page."
       "YouTube could not verify this embed. Hard refresh the page and try again."
     );
 
@@ -2132,46 +2080,33 @@ function createYouTubePlayer() {
   }
 
 
-  const iframe =
-    createYouTubeIframe(
-      getInitialEmbedVideoId()
-    );
   state.playerRequested =
     true;
 
 
-  if (!iframe) {
   state.player =
     new YT.Player(
 
-    return;
       "youtube-player",
 
-  }
       {
 
         width:
           "100%",
 
-  state.playerRequested =
-    true;
         height:
           "100%",
 
         videoId:
           getInitialEmbedVideoId(),
 
-  state.player =
-    new YT.Player(
         host:
           state.useNoCookieHost
             ? "https://www.youtube-nocookie.com"
             : "https://www.youtube.com",
 
-      iframe,
         playerVars: {
 
-      {
           controls: 1,
 
           enablejsapi: 1,
