@@ -15,13 +15,12 @@
 
     <section class="player-card" aria-labelledby="page-title">
 
-      <!-- ==================================================
-           HEADER
-           ================================================== -->
+      <!-- HEADER -->
 
       <header class="player-header">
 
         <div class="header-copy">
+
           <p class="eyebrow">
             1960s–1970s Collection
           </p>
@@ -29,7 +28,9 @@
           <h1 id="page-title">
             Marie & Jerry's Vinyl Player
           </h1>
+
         </div>
+
 
         <div class="meter-images" aria-hidden="true">
 
@@ -50,22 +51,24 @@
       </header>
 
 
-      <!-- ==================================================
-           YOUTUBE CRT
-           ================================================== -->
+      <!-- YOUTUBE PLAYER -->
 
       <div class="video-wrap">
         <div id="youtube-player"></div>
       </div>
 
 
-      <!-- ==================================================
-           CURRENT TRACK
-           ================================================== -->
+      <!-- CURRENT TRACK -->
 
-      <section class="track-info" aria-live="polite">
+      <section
+        class="track-info"
+        aria-live="polite"
+      >
 
-        <p id="status" class="status">
+        <p
+          id="status"
+          class="status"
+        >
           Loading your record…
         </p>
 
@@ -80,11 +83,12 @@
       </section>
 
 
-      <!-- ==================================================
-           MAIN CONTROLS
-           ================================================== -->
+      <!-- MAIN CONTROLS -->
 
-      <div class="controls" aria-label="Music controls">
+      <div
+        class="controls"
+        aria-label="Music controls"
+      >
 
         <button
           id="previous-button"
@@ -93,6 +97,7 @@
         >
           Previous
         </button>
+
 
         <button
           id="play-button"
@@ -103,20 +108,30 @@
           Play
         </button>
 
+
         <button
           id="next-button"
           type="button"
           disabled
         >
-          Random Next
+          Next
+        </button>
+
+
+        <button
+          id="shuffle-button"
+          class="shuffle-toggle"
+          type="button"
+          aria-pressed="true"
+          disabled
+        >
+          Shuffle: On
         </button>
 
       </div>
 
 
-      <!-- ==================================================
-           VOLUME
-           ================================================== -->
+      <!-- VOLUME -->
 
       <div class="secondary-controls">
 
@@ -137,9 +152,7 @@
       </div>
 
 
-      <!-- ==================================================
-           TRACK LIBRARY
-           ================================================== -->
+      <!-- RECORD LIBRARY -->
 
       <section
         class="track-browser"
@@ -157,6 +170,7 @@
           </span>
 
         </div>
+
 
         <div class="track-search-wrap">
 
@@ -177,10 +191,10 @@
 
         </div>
 
+
         <div
           id="track-list"
           class="track-list"
-          role="list"
           aria-label="Available tracks"
         ></div>
 
@@ -191,8 +205,14 @@
   </main>
 
 
-  <script src="https://www.youtube.com/iframe_api"></script>
+  <!--
+    Load our code first so the YouTube-ready callback
+    already exists when Google's API finishes loading.
+  -->
+
   <script src="app.js"></script>
+
+  <script src="https://www.youtube.com/iframe_api"></script>
 
 </body>
 </html>
