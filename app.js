@@ -1,55 +1,130 @@
+const STORAGE_KEY = "momPopVinylPlayer";
+
+
+/* =========================================================
+   STATE
+   ========================================================= */
+
 const state = {
   tracks: [],
+
   queue: [],
+
   history: [],
+
+  failedIndexes:
+    new Set(),
 
   currentIndex: null,
 
   player: null,
+
   playerReady: false,
+
   tracksReady: false,
+
   initialized: false,
 
   isPlaying: false,
-  errorSkips: 0
+
+  shuffle: true,
+
+  savedYoutubeId: null,
+
+  consecutiveErrors: 0
 };
 
 
+
 /* =========================================================
-   DOM ELEMENTS 
+   DOM
    ========================================================= */
 
 const elements = {
-  status: document.querySelector("#status"),
-  title: document.querySelector("#track-title"),
-  details: document.querySelector("#track-details"),
 
-  previousButton: document.querySelector("#previous-button"),
-  playButton: document.querySelector("#play-button"),
-  nextButton: document.querySelector("#next-button"),
+  status:
+    document.querySelector(
+      "#status"
+    ),
 
-  volumeControl: document.querySelector("#volume-control"),
+  title:
+    document.querySelector(
+      "#track-title"
+    ),
 
-  trackList: document.querySelector("#track-list"),
-  trackCount: document.querySelector("#track-count"),
-  trackSearch: document.querySelector("#track-search")
+  details:
+    document.querySelector(
+      "#track-details"
+    ),
+
+  previousButton:
+    document.querySelector(
+      "#previous-button"
+    ),
+
+  playButton:
+    document.querySelector(
+      "#play-button"
+    ),
+
+  nextButton:
+    document.querySelector(
+      "#next-button"
+    ),
+
+  shuffleButton:
+    document.querySelector(
+      "#shuffle-button"
+    ),
+
+  volumeControl:
+    document.querySelector(
+      "#volume-control"
+    ),
+
+  trackList:
+    document.querySelector(
+      "#track-list"
+    ),
+
+  trackCount:
+    document.querySelector(
+      "#track-count"
+    ),
+
+  trackSearch:
+    document.querySelector(
+      "#track-search"
+    )
 };
 
 
+
 /* =========================================================
-   HELPERS
+   GENERAL HELPERS
    ========================================================= */
 
 function shuffle(items) {
-  const copy = [...items];
+
+  const copy =
+    [...items];
+
 
   for (
-    let index = copy.length - 1;
+    let index =
+      copy.length - 1;
+
     index > 0;
+
     index -= 1
   ) {
+
     const randomIndex =
-      Math.floor(Math.random() * (index + 1));
+      Math.floor(
+        Math.random() *
+        (index + 1)
+      );
+
 
     [
       copy[index],
@@ -58,373 +133,783 @@ function shuffle(items) {
       copy[randomIndex],
       copy[index]
     ];
+
   }
+
 
   return copy;
 }
 
 
+
 function normalizeText(value) {
-  return String(value ?? "")
+
+  return String(
+    value ?? ""
+  )
     .trim()
     .toLowerCase();
+
 }
+
+
+
+function clampVolume(value) {
+
+  const number =
+    Number(value);
+
+
+  return Number.isFinite(number)
+    ? Math.max(
+        0,
+        Math.min(
+          100,
+          number
+        )
+      )
+    : 70;
+
+}
+
 
 
 /* =========================================================
-   RANDOM QUEUE
+   LOCAL STORAGE
    ========================================================= */
 
-function rebuildQueue() {
-  const allIndexes =
-    state.tracks.map((_, index) => index);
+function loadPreferences() {
 
-  state.queue = shuffle(allIndexes);
+  try {
 
-  /*
-   * Random Next uses pop(), so the final item in the
-   * array is actually the next track.
-   *
-   * Prevent the current song from immediately repeating.
-   */
+    const saved =
+      JSON.parse(
+        localStorage.getItem(
+          STORAGE_KEY
+        ) || "{}"
+      );
 
-  if (
-    state.currentIndex !== null &&
-    state.queue.length > 1 &&
-    state.queue[state.queue.length - 1] ===
-      state.currentIndex
-  ) {
-    [
-      state.queue[0],
-      state.queue[state.queue.length - 1]
-    ] = [
-      state.queue[state.queue.length - 1],
-      state.queue[0]
-    ];
+
+    elements.volumeControl.value =
+      String(
+        clampVolume(
+          saved.volume
+        )
+      );
+
+
+    state.shuffle =
+      typeof saved.shuffle ===
+      "boolean"
+        ? saved.shuffle
+        : true;
+
+
+    state.savedYoutubeId =
+      typeof saved.youtubeId ===
+      "string"
+        ? saved.youtubeId
+        : null;
+
+  } catch (error) {
+
+    console.warn(
+      "Could not read saved player settings.",
+      error
+    );
+
+
+    elements.volumeControl.value =
+      "70";
+
   }
+
+
+  updateShuffleButton();
+
 }
 
 
-function getNextRandomIndex() {
-  if (state.queue.length === 0) {
-    rebuildQueue();
+
+function savePreferences() {
+
+  try {
+
+    localStorage.setItem(
+
+      STORAGE_KEY,
+
+      JSON.stringify({
+
+        volume:
+          clampVolume(
+            elements
+              .volumeControl
+              .value
+          ),
+
+        youtubeId:
+          state.savedYoutubeId,
+
+        shuffle:
+          state.shuffle
+
+      })
+
+    );
+
+  } catch (error) {
+
+    console.warn(
+      "Could not save player settings.",
+      error
+    );
+
   }
 
-  return state.queue.pop();
 }
+
 
 
 /* =========================================================
-   CONTROLS
+   STATUS
    ========================================================= */
 
-function setControlsEnabled(enabled) {
-  elements.playButton.disabled = !enabled;
-  elements.nextButton.disabled = !enabled;
+function setReadyStatus(
+  message = ""
+) {
+
+  if (message) {
+
+    elements.status.textContent =
+      message;
+
+    return;
+
+  }
+
+
+  const mode =
+    state.shuffle
+      ? "Shuffle on"
+      : "Shuffle off";
+
+
+  elements.status.textContent =
+    `${state.tracks.length.toLocaleString()} tracks loaded • ${mode}`;
+
+}
+
+
+
+/* =========================================================
+   CONTROL STATE
+   ========================================================= */
+
+function setControlsEnabled(
+  enabled
+) {
+
+  elements.playButton.disabled =
+    !enabled;
+
+
+  elements.nextButton.disabled =
+    !enabled;
+
+
+  elements.shuffleButton.disabled =
+    !enabled;
+
 
   elements.previousButton.disabled =
     !enabled ||
     state.history.length === 0;
 
-  /*
-   * Volume intentionally stays enabled.
-   *
-   * It can be positioned before YouTube finishes loading,
-   * and its value will be applied when the player is ready.
-   */
 }
+
+
+
+/* =========================================================
+   SHUFFLE BUTTON
+   ========================================================= */
+
+function updateShuffleButton() {
+
+  elements.shuffleButton.textContent =
+    state.shuffle
+      ? "Shuffle: On"
+      : "Shuffle: Off";
+
+
+  elements.shuffleButton.setAttribute(
+    "aria-pressed",
+    String(
+      state.shuffle
+    )
+  );
+
+
+  elements.shuffleButton.classList.toggle(
+    "is-on",
+    state.shuffle
+  );
+
+}
+
+
+
+/* =========================================================
+   SHUFFLE QUEUE
+   ========================================================= */
+
+function rebuildShuffleQueue() {
+
+  const candidates =
+    state.tracks
+
+      .map(
+        (_, index) =>
+          index
+      )
+
+      .filter(
+        (index) =>
+
+          index !==
+            state.currentIndex &&
+
+          !state
+            .failedIndexes
+            .has(index)
+      );
+
+
+  state.queue =
+    shuffle(candidates);
+
+}
+
+
+
+function getNextRandomIndex() {
+
+  /*
+   * Remove anything that failed
+   * since the queue was built.
+   */
+
+  state.queue =
+    state.queue.filter(
+      (index) =>
+        !state
+          .failedIndexes
+          .has(index)
+    );
+
+
+  if (
+    state.queue.length === 0
+  ) {
+
+    rebuildShuffleQueue();
+
+  }
+
+
+  if (
+    state.queue.length > 0
+  ) {
+
+    return state.queue.pop();
+
+  }
+
+
+  /*
+   * Only one playable song may remain.
+   */
+
+  if (
+    state.currentIndex !== null &&
+
+    !state
+      .failedIndexes
+      .has(
+        state.currentIndex
+      )
+  ) {
+
+    return state.currentIndex;
+
+  }
+
+
+  return null;
+
+}
+
+
+
+/* =========================================================
+   NORMAL NEXT
+   ========================================================= */
+
+function getNextSequentialIndex() {
+
+  if (
+    state.tracks.length === 0
+  ) {
+
+    return null;
+
+  }
+
+
+  const start =
+    Number.isInteger(
+      state.currentIndex
+    )
+      ? state.currentIndex
+      : -1;
+
+
+  /*
+   * Walk through tracks.json in order.
+   * Wrap around at the end.
+   */
+
+  for (
+    let offset = 1;
+
+    offset <=
+      state.tracks.length;
+
+    offset += 1
+  ) {
+
+    const index =
+      (
+        start +
+        offset
+      ) %
+      state.tracks.length;
+
+
+    if (
+      !state
+        .failedIndexes
+        .has(index)
+    ) {
+
+      return index;
+
+    }
+
+  }
+
+
+  return null;
+
+}
+
+
+
+/* =========================================================
+   DETERMINE NEXT TRACK
+   ========================================================= */
+
+function getNextTrackIndex() {
+
+  return state.shuffle
+    ? getNextRandomIndex()
+    : getNextSequentialIndex();
+
+}
+
 
 
 /* =========================================================
    CURRENT TRACK DISPLAY
    ========================================================= */
 
-function renderTrack(track) {
+function renderCurrentTrack(
+  track
+) {
+
   elements.title.textContent =
-    track.title || "Unknown Track";
+    track.title ||
+    "Unknown Track";
+
 
   const artist =
-    track.artist || "Unknown Artist";
+    track.artist ||
+    "Unknown Artist";
+
 
   const album =
-    track.album || "Unknown Album";
+    track.album ||
+    "Unknown Album";
+
 
   const trackNumber =
-    track.trackNumber ?? "?";
+    track.trackNumber ??
+    "?";
+
 
   elements.details.textContent =
     `${artist} — ${album} — Track ${trackNumber}`;
 
-  elements.status.textContent =
-    `${state.tracks.length.toLocaleString()} tracks loaded`;
+
+  setReadyStatus();
+
 }
 
 
-/* =========================================================
-   TRACK LIBRARY
-   ========================================================= */
-
-function renderTrackList(tracks = state.tracks) {
-  elements.trackList.innerHTML = "";
-
-  const fragment =
-    document.createDocumentFragment();
-
-  tracks.forEach((track) => {
-    /*
-     * Filtered arrays still contain references to the
-     * original objects, so this returns their true index.
-     */
-
-    const originalIndex =
-      state.tracks.indexOf(track);
-
-    const button =
-      document.createElement("button");
-
-    button.type = "button";
-    button.className = "track-row";
-
-    button.dataset.trackIndex =
-      String(originalIndex);
-
-    button.setAttribute("role", "listitem");
-
-
-    /* Song title */
-
-    const title =
-      document.createElement("span");
-
-    title.className =
-      "track-row-title";
-
-    title.textContent =
-      track.title || "Unknown Track";
-
-
-    /* Artist / album */
-
-    const meta =
-      document.createElement("span");
-
-    meta.className =
-      "track-row-meta";
-
-    const artist =
-      track.artist || "Unknown Artist";
-
-    const album =
-      track.album || "Unknown Album";
-
-    meta.textContent =
-      `${artist} · ${album}`;
-
-
-    button.append(title, meta);
-
-
-    /* Highlight current song */
-
-    if (
-      originalIndex ===
-      state.currentIndex
-    ) {
-      button.classList.add("is-active");
-
-      button.setAttribute(
-        "aria-current",
-        "true"
-      );
-    }
-
-
-    /* Select song */
-
-    button.addEventListener(
-      "click",
-      () => {
-        loadTrack(originalIndex, {
-          addToHistory: true,
-          autoplay: true,
-          scrollIntoView: true
-        });
-      }
-    );
-
-
-    fragment.appendChild(button);
-  });
-
-
-  elements.trackList.appendChild(fragment);
-
-
-  /* Track count */
-
-  if (
-    tracks.length === state.tracks.length
-  ) {
-    elements.trackCount.textContent =
-      `${state.tracks.length.toLocaleString()} tracks`;
-  } else {
-    elements.trackCount.textContent =
-      `${tracks.length.toLocaleString()} / ` +
-      `${state.tracks.length.toLocaleString()} tracks`;
-  }
-}
-
 
 /* =========================================================
-   ACTIVE TRACK HIGHLIGHT
+   SEARCH MATCHING
    ========================================================= */
 
-function highlightCurrentTrack({
-  scrollIntoView = false
-} = {}) {
-
-  const rows =
-    elements.trackList.querySelectorAll(
-      ".track-row"
-    );
-
-  let activeRow = null;
-
-  rows.forEach((row) => {
-    const index =
-      Number(row.dataset.trackIndex);
-
-    const isCurrent =
-      index === state.currentIndex;
-
-    row.classList.toggle(
-      "is-active",
-      isCurrent
-    );
-
-    if (isCurrent) {
-      row.setAttribute(
-        "aria-current",
-        "true"
-      );
-
-      activeRow = row;
-    } else {
-      row.removeAttribute(
-        "aria-current"
-      );
-    }
-  });
-
-
-  if (
-    scrollIntoView &&
-    activeRow
-  ) {
-    activeRow.scrollIntoView({
-      block: "nearest"
-    });
-  }
-}
-
-
-/* =========================================================
-   LIBRARY SEARCH
-   ========================================================= */
-
-function searchTracks() {
-  const query =
-    normalizeText(
-      elements.trackSearch.value
-    );
+function trackMatchesSearch(
+  track,
+  query
+) {
 
   if (!query) {
-    renderTrackList(
-      state.tracks
-    );
 
-    return;
+    return true;
+
   }
 
 
-  const filteredTracks =
-    state.tracks.filter((track) => {
+  const haystack =
+    normalizeText(
 
-      const searchableText = [
-        track.title,
-        track.artist,
-        track.album,
-        track.trackNumber
-      ]
-        .map(normalizeText)
-        .join(" ");
+      `${track.title} ${track.artist} ${track.album} ${track.trackNumber}`
 
-      return searchableText.includes(query);
-    });
+    );
 
 
-  renderTrackList(filteredTracks);
+  /*
+   * Search:
+   *
+   *   led zeppelin black
+   *
+   * matches even though the words are
+   * in different metadata fields.
+   */
+
+  return query
+    .split(/\s+/)
+    .every(
+      (term) =>
+        haystack.includes(term)
+    );
+
 }
 
 
+
 /* =========================================================
-   LOAD TRACK
+   RECORD LIBRARY
+   ========================================================= */
+
+function renderTrackList() {
+
+  const query =
+    normalizeText(
+      elements
+        .trackSearch
+        .value
+    );
+
+
+  const fragment =
+    document
+      .createDocumentFragment();
+
+
+  let visibleCount = 0;
+
+
+  elements.trackList.innerHTML =
+    "";
+
+
+  state.tracks.forEach(
+    (track, index) => {
+
+      if (
+        !trackMatchesSearch(
+          track,
+          query
+        )
+      ) {
+
+        return;
+
+      }
+
+
+      visibleCount += 1;
+
+
+      const button =
+        document.createElement(
+          "button"
+        );
+
+
+      const title =
+        document.createElement(
+          "span"
+        );
+
+
+      const meta =
+        document.createElement(
+          "span"
+        );
+
+
+      const badge =
+        document.createElement(
+          "span"
+        );
+
+
+      const isFailed =
+        state
+          .failedIndexes
+          .has(index);
+
+
+      const isCurrent =
+        index ===
+        state.currentIndex;
+
+
+      button.type =
+        "button";
+
+
+      button.className =
+        "track-row";
+
+
+      button.dataset.trackIndex =
+        String(index);
+
+
+      button.disabled =
+        isFailed;
+
+
+      button.classList.toggle(
+        "is-active",
+        isCurrent
+      );
+
+
+      button.classList.toggle(
+        "is-unavailable",
+        isFailed
+      );
+
+
+      if (isCurrent) {
+
+        button.setAttribute(
+          "aria-current",
+          "true"
+        );
+
+      }
+
+
+      title.className =
+        "track-row-title";
+
+
+      title.textContent =
+        track.title ||
+        "Unknown Track";
+
+
+      meta.className =
+        "track-row-meta";
+
+
+      meta.textContent =
+        `${track.artist || "Unknown Artist"} · ${track.album || "Unknown Album"}`;
+
+
+      badge.className =
+        "track-row-badge";
+
+
+      badge.textContent =
+        isFailed
+          ? "Unavailable"
+          : "";
+
+
+      button.append(
+        title,
+        meta,
+        badge
+      );
+
+
+      fragment.appendChild(
+        button
+      );
+
+    }
+  );
+
+
+  elements.trackList.appendChild(
+    fragment
+  );
+
+
+  elements.trackCount.textContent =
+    query
+
+      ? `${visibleCount.toLocaleString()} / ${state.tracks.length.toLocaleString()} tracks`
+
+      : `${state.tracks.length.toLocaleString()} tracks`;
+
+}
+
+
+
+/* =========================================================
+   SCROLL ACTIVE TRACK INTO VIEW
+   ========================================================= */
+
+function scrollCurrentTrackIntoView() {
+
+  const activeRow =
+    elements.trackList.querySelector(
+      ".track-row.is-active"
+    );
+
+
+  if (activeRow) {
+
+    activeRow.scrollIntoView({
+      block:
+        "nearest"
+    });
+
+  }
+
+}
+
+
+
+/* =========================================================
+   LOAD A TRACK
    ========================================================= */
 
 function loadTrack(
+
   index,
+
   {
+
     addToHistory = true,
+
     autoplay = true,
-    scrollIntoView = true
+
+    scroll = true
+
   } = {}
+
 ) {
 
   if (
     !state.playerReady ||
     !state.tracksReady
   ) {
+
     return;
+
   }
 
 
   if (
     !Number.isInteger(index) ||
+
     index < 0 ||
-    index >= state.tracks.length
+
+    index >=
+      state.tracks.length
   ) {
+
     console.warn(
       "Invalid track index:",
       index
     );
 
     return;
+
   }
 
 
   if (
-    addToHistory &&
-    state.currentIndex !== null &&
-    state.currentIndex !== index
+    state
+      .failedIndexes
+      .has(index)
   ) {
-    state.history.push(
-      state.currentIndex
+
+    setReadyStatus(
+      "That track is unavailable in this session."
     );
+
+    return;
+
   }
 
 
-  state.currentIndex = index;
+  /*
+   * Remember the track we are leaving.
+   */
+
+  if (
+    addToHistory &&
+
+    state.currentIndex !== null &&
+
+    state.currentIndex !==
+      index
+  ) {
+
+    state.history.push(
+      state.currentIndex
+    );
+
+  }
+
+
+  state.currentIndex =
+    index;
 
 
   /*
-   * Remove manually selected/current track from random
-   * queue so Random Next does not immediately choose it.
+   * Don't let the current track immediately
+   * return from the shuffle queue.
    */
 
   state.queue =
     state.queue.filter(
+
       (queuedIndex) =>
         queuedIndex !== index
+
     );
 
 
@@ -432,52 +917,105 @@ function loadTrack(
     state.tracks[index];
 
 
-  renderTrack(track);
+  /*
+   * Remember selected song for next visit.
+   */
+
+  state.savedYoutubeId =
+    track.youtubeId;
 
 
-  highlightCurrentTrack({
-    scrollIntoView
-  });
+  savePreferences();
+
+
+  renderCurrentTrack(
+    track
+  );
+
+
+  renderTrackList();
+
+
+  if (scroll) {
+
+    scrollCurrentTrackIntoView();
+
+  }
 
 
   if (autoplay) {
+
     state.player.loadVideoById(
       track.youtubeId
     );
+
   } else {
+
     state.player.cueVideoById(
       track.youtubeId
     );
+
   }
 
 
   elements.previousButton.disabled =
     state.history.length === 0;
+
 }
+
 
 
 /* =========================================================
-   RANDOM NEXT
+   NEXT
    ========================================================= */
 
-function playRandomTrack() {
+function playNextTrack(
+  {
+    addToHistory = true
+  } = {}
+) {
+
   if (
     !state.playerReady ||
-    !state.tracksReady ||
-    state.tracks.length === 0
+    !state.tracksReady
   ) {
+
     return;
+
   }
 
-  const nextIndex =
-    getNextRandomIndex();
 
-  loadTrack(nextIndex, {
-    addToHistory: true,
-    autoplay: true,
-    scrollIntoView: true
-  });
+  const nextIndex =
+    getNextTrackIndex();
+
+
+  if (
+    nextIndex === null
+  ) {
+
+    setReadyStatus(
+      "No playable tracks remain in this session."
+    );
+
+    return;
+
+  }
+
+
+  loadTrack(
+
+    nextIndex,
+
+    {
+      addToHistory,
+      autoplay: true,
+      scroll: true
+    }
+
+  );
+
 }
+
 
 
 /* =========================================================
@@ -485,26 +1023,53 @@ function playRandomTrack() {
    ========================================================= */
 
 function playPreviousTrack() {
-  const previousIndex =
-    state.history.pop();
 
-  if (
-    previousIndex === undefined
+  /*
+   * Skip any tracks that have failed
+   * during this session.
+   */
+
+  while (
+    state.history.length > 0
   ) {
-    return;
+
+    const previousIndex =
+      state.history.pop();
+
+
+    if (
+      !state
+        .failedIndexes
+        .has(
+          previousIndex
+        )
+    ) {
+
+      loadTrack(
+
+        previousIndex,
+
+        {
+          addToHistory: false,
+          autoplay: true,
+          scroll: true
+        }
+
+      );
+
+
+      break;
+
+    }
+
   }
-
-
-  loadTrack(previousIndex, {
-    addToHistory: false,
-    autoplay: true,
-    scrollIntoView: true
-  });
 
 
   elements.previousButton.disabled =
     state.history.length === 0;
+
 }
+
 
 
 /* =========================================================
@@ -512,20 +1077,68 @@ function playPreviousTrack() {
    ========================================================= */
 
 function togglePlayback() {
+
   if (
     !state.playerReady ||
-    state.currentIndex === null
+
+    state.currentIndex ===
+      null
   ) {
+
     return;
+
   }
 
 
-  if (state.isPlaying) {
+  if (
+    state.isPlaying
+  ) {
+
     state.player.pauseVideo();
+
   } else {
+
     state.player.playVideo();
+
   }
+
 }
+
+
+
+/* =========================================================
+   SHUFFLE ON / OFF
+   ========================================================= */
+
+function toggleShuffle() {
+
+  state.shuffle =
+    !state.shuffle;
+
+
+  updateShuffleButton();
+
+
+  if (
+    state.shuffle
+  ) {
+
+    rebuildShuffleQueue();
+
+  } else {
+
+    state.queue = [];
+
+  }
+
+
+  savePreferences();
+
+
+  setReadyStatus();
+
+}
+
 
 
 /* =========================================================
@@ -533,67 +1146,68 @@ function togglePlayback() {
    ========================================================= */
 
 function updateVolume() {
+
+  const volume =
+    clampVolume(
+      elements
+        .volumeControl
+        .value
+    );
+
+
+  elements.volumeControl.value =
+    String(volume);
+
+
   /*
-   * Let the user move the slider even before YouTube
-   * finishes initializing.
-   *
-   * Once ready, the current slider value is applied.
+   * Save even if YouTube has not
+   * finished initializing yet.
    */
+
+  savePreferences();
+
 
   if (
     !state.playerReady ||
     !state.player
   ) {
+
     return;
+
   }
 
 
-  const rawValue =
-    Number(
-      elements.volumeControl.value
-    );
+  state.player.setVolume(
+    volume
+  );
 
 
-  const volume =
-    Math.max(
-      0,
-      Math.min(
-        100,
-        Number.isFinite(rawValue)
-          ? rawValue
-          : 70
-      )
-    );
+  if (
+    volume === 0
+  ) {
 
-
-  state.player.setVolume(volume);
-
-
-  /*
-   * Treat volume 0 as mute.
-   */
-
-  if (volume === 0) {
     state.player.mute();
-    return;
-  }
 
+  } else if (
+    state.player.isMuted()
+  ) {
 
-  /*
-   * Moving volume above 0 unmutes the player.
-   */
-
-  if (state.player.isMuted()) {
     state.player.unMute();
+
   }
+
 }
 
 
+
 /* =========================================================
-   YOUTUBE PLAYER STATE
+   YOUTUBE STATE CHANGES
    ========================================================= */
 
-function handlePlayerStateChange(event) {
+function handlePlayerStateChange(
+  event
+) {
+
   state.isPlaying =
     event.data ===
     YT.PlayerState.PLAYING;
@@ -605,106 +1219,389 @@ function handlePlayerStateChange(event) {
       : "Play";
 
 
+  /*
+   * Successful playback means the
+   * error chain has ended.
+   */
+
   if (
     event.data ===
     YT.PlayerState.PLAYING
   ) {
-    state.errorSkips = 0;
+
+    state.consecutiveErrors =
+      0;
+
+
+    setReadyStatus();
+
   }
 
+
+  /*
+   * Finished song automatically advances
+   * using the current Shuffle mode.
+   */
 
   if (
     event.data ===
     YT.PlayerState.ENDED
   ) {
-    playRandomTrack();
+
+    playNextTrack();
+
   }
+
 }
 
 
+
 /* =========================================================
-   VIDEO ERROR
+   YOUTUBE ERROR DESCRIPTION
    ========================================================= */
 
-function handlePlayerError() {
-  state.errorSkips += 1;
+function describePlayerError(
+  code
+) {
 
+  switch (code) {
+
+    case 2:
+
+      return (
+        "Invalid YouTube video ID"
+      );
+
+
+    case 5:
+
+      return (
+        "YouTube could not play this video in the HTML5 player"
+      );
+
+
+    case 100:
+
+      return (
+        "Video removed or private"
+      );
+
+
+    case 101:
+
+    case 150:
+
+      return (
+        "Embedding disabled by the video owner"
+      );
+
+
+    default:
+
+      return (
+        "Video unavailable"
+      );
+
+  }
+
+}
+
+
+
+/* =========================================================
+   BETTER UNAVAILABLE-TRACK HANDLING
+   ========================================================= */
+
+function handlePlayerError(
+  event
+) {
+
+  const code =
+    Number(event.data);
+
+
+  /*
+   * Error 153 is different.
+   *
+   * It can indicate a client/embed identity
+   * problem rather than a bad individual song.
+   *
+   * Don't blacklist the song and keep skipping
+   * the entire library.
+   */
 
   if (
-    state.errorSkips >=
-    Math.min(
-      state.tracks.length,
-      10
-    )
+    code === 153
   ) {
-    elements.status.textContent =
-      "Several videos could not be played. Try another track.";
+
+    setReadyStatus(
+      "YouTube could not verify this embed. Refresh the page and try again."
+    );
 
     return;
+
   }
 
 
-  elements.status.textContent =
-    "This video is unavailable or cannot be embedded. Skipping…";
+  /*
+   * Mark only this song unavailable
+   * for the remainder of this session.
+   */
+
+  if (
+    state.currentIndex !==
+    null
+  ) {
+
+    state.failedIndexes.add(
+      state.currentIndex
+    );
+
+
+    state.queue =
+      state.queue.filter(
+
+        (index) =>
+          index !==
+          state.currentIndex
+
+      );
+
+  }
+
+
+  state.consecutiveErrors +=
+    1;
+
+
+  /*
+   * Re-render so the broken song
+   * visibly says UNAVAILABLE.
+   */
+
+  renderTrackList();
+
+
+  /*
+   * Don't get stuck in an infinite
+   * skip loop if something larger is wrong.
+   */
+
+  if (
+
+    state.consecutiveErrors >=
+
+    Math.min(
+      10,
+      state.tracks.length
+    )
+
+  ) {
+
+    setReadyStatus(
+      "Several videos failed in a row. Choose another track from the library."
+    );
+
+    return;
+
+  }
+
+
+  const reason =
+    describePlayerError(
+      code
+    );
+
+
+  setReadyStatus(
+    `${reason}. Skipping…`
+  );
 
 
   window.setTimeout(
-    playRandomTrack,
-    500
+
+    () => {
+
+      /*
+       * Don't put the broken track
+       * into Previous history.
+       */
+
+      playNextTrack({
+        addToHistory: false
+      });
+
+    },
+
+    600
+
   );
+
 }
 
 
+
 /* =========================================================
-   INITIAL TRACK
+   AUTOPLAY BLOCKED
    ========================================================= */
 
-function initializeFirstTrack() {
+function handleAutoplayBlocked() {
+
+  state.isPlaying =
+    false;
+
+
+  elements.playButton.textContent =
+    "Play";
+
+
+  setReadyStatus(
+    "Playback was blocked by your browser — press Play to start."
+  );
+
+}
+
+
+
+/* =========================================================
+   INITIALIZE FIRST / SAVED SONG
+   ========================================================= */
+
+function initializePlayer() {
+
   if (
+
     !state.playerReady ||
+
     !state.tracksReady ||
+
     state.initialized
+
   ) {
+
     return;
+
   }
 
 
-  state.initialized = true;
+  state.initialized =
+    true;
 
 
-  setControlsEnabled(true);
+  setControlsEnabled(
+    true
+  );
 
 
-  const firstIndex =
-    getNextRandomIndex();
-
-
-  loadTrack(firstIndex, {
-    addToHistory: false,
-    autoplay: false,
-    scrollIntoView: true
-  });
-
+  /*
+   * Restore saved volume.
+   */
 
   updateVolume();
+
+
+  /*
+   * Find the song that was playing
+   * during the previous visit.
+   */
+
+  const savedIndex =
+    state.savedYoutubeId
+
+      ? state.tracks.findIndex(
+          (track) =>
+            track.youtubeId ===
+            state.savedYoutubeId
+        )
+
+      : -1;
+
+
+  /*
+   * If no saved song exists:
+   *
+   * Shuffle On  = random first track
+   * Shuffle Off = first track in tracks.json
+   */
+
+  const firstIndex =
+
+    savedIndex >= 0
+
+      ? savedIndex
+
+      : state.shuffle
+
+        ? getNextRandomIndex()
+
+        : getNextSequentialIndex();
+
+
+  if (
+    firstIndex === null
+  ) {
+
+    setReadyStatus(
+      "No playable tracks were found."
+    );
+
+    return;
+
+  }
+
+
+  /*
+   * Restore the song but don't automatically
+   * start blasting music on page load.
+   */
+
+  loadTrack(
+
+    firstIndex,
+
+    {
+      addToHistory: false,
+      autoplay: false,
+      scroll: true
+    }
+
+  );
+
 }
 
 
+
 /* =========================================================
-   LOAD TRACK DATABASE
+   LOAD TRACKS.JSON
    ========================================================= */
 
 async function loadTracks() {
+
   try {
 
     const response =
-      await fetch("tracks.json");
+      await fetch(
 
+        "tracks.json",
 
-    if (!response.ok) {
-      throw new Error(
-        `Could not load tracks.json (${response.status})`
+        {
+          cache:
+            "no-store"
+        }
+
       );
+
+
+    if (
+      !response.ok
+    ) {
+
+      throw new Error(
+
+        `Could not load tracks.json (${response.status})`
+
+      );
+
     }
 
 
@@ -713,54 +1610,72 @@ async function loadTracks() {
 
 
     if (
+
       !Array.isArray(tracks) ||
+
       tracks.length === 0
+
     ) {
+
       throw new Error(
         "tracks.json does not contain any tracks."
       );
+
     }
 
 
+    /*
+     * A valid standard YouTube video ID
+     * is 11 URL-safe characters.
+     */
+
     state.tracks =
-      tracks.filter((track) =>
-        typeof track.youtubeId === "string" &&
-        track.youtubeId.trim().length === 11
+      tracks.filter(
+
+        (track) =>
+
+          typeof track.youtubeId ===
+            "string" &&
+
+          /^[A-Za-z0-9_-]{11}$/.test(
+            track.youtubeId.trim()
+          )
+
       );
 
 
     if (
       state.tracks.length === 0
     ) {
+
       throw new Error(
         "No valid YouTube IDs were found."
       );
+
     }
 
 
-    state.tracksReady = true;
+    state.tracksReady =
+      true;
 
 
-    rebuildQueue();
+    rebuildShuffleQueue();
 
-
-    /*
-     * Populate library immediately, even if YouTube
-     * is still loading.
-     */
 
     renderTrackList();
 
 
-    initializeFirstTrack();
+    initializePlayer();
 
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      error
+    );
 
 
     elements.status.textContent =
-      "Could not load tracks.json. Run the site through a local web server.";
+      "Could not load the music library.";
 
 
     elements.title.textContent =
@@ -773,12 +1688,15 @@ async function loadTracks() {
 
     elements.trackCount.textContent =
       "Unavailable";
+
   }
+
 }
 
 
+
 /* =========================================================
-   YOUTUBE API INITIALIZATION
+   YOUTUBE API
    ========================================================= */
 
 window.onYouTubeIframeAPIReady =
@@ -786,92 +1704,219 @@ window.onYouTubeIframeAPIReady =
 
     state.player =
       new YT.Player(
+
         "youtube-player",
+
         {
-          width: "100%",
-          height: "100%",
+
+          width:
+            "100%",
+
+          height:
+            "100%",
+
 
           playerVars: {
+
+            /*
+             * Keep native YouTube controls,
+             * including its seek bar.
+             */
+
+            controls: 1,
+
             playsinline: 1,
-            rel: 0
+
+            rel: 0,
+
+            /*
+             * Recommended when controlling
+             * the player through the JS API.
+             */
+
+            origin:
+              window.location.origin
+
           },
+
 
           events: {
 
             onReady: () => {
-              state.playerReady = true;
 
-              /*
-               * Apply slider position to YouTube as soon
-               * as the player exists.
-               */
+              state.playerReady =
+                true;
+
 
               updateVolume();
 
-              initializeFirstTrack();
+
+              initializePlayer();
+
             },
+
 
             onStateChange:
               handlePlayerStateChange,
 
+
             onError:
-              handlePlayerError
+              handlePlayerError,
+
+
+            onAutoplayBlocked:
+              handleAutoplayBlocked
+
           }
+
         }
+
       );
+
   };
+
 
 
 /* =========================================================
    EVENT LISTENERS
    ========================================================= */
 
-elements.previousButton.addEventListener(
-  "click",
-  playPreviousTrack
-);
+elements.previousButton
+  .addEventListener(
+
+    "click",
+
+    playPreviousTrack
+
+  );
 
 
-elements.playButton.addEventListener(
-  "click",
-  togglePlayback
-);
+
+elements.playButton
+  .addEventListener(
+
+    "click",
+
+    togglePlayback
+
+  );
 
 
-elements.nextButton.addEventListener(
-  "click",
-  playRandomTrack
-);
+
+elements.nextButton
+  .addEventListener(
+
+    "click",
+
+    () =>
+      playNextTrack()
+
+  );
+
+
+
+elements.shuffleButton
+  .addEventListener(
+
+    "click",
+
+    toggleShuffle
+
+  );
+
+
+
+elements.volumeControl
+  .addEventListener(
+
+    "input",
+
+    updateVolume
+
+  );
+
+
+
+elements.volumeControl
+  .addEventListener(
+
+    "change",
+
+    updateVolume
+
+  );
+
+
+
+elements.trackSearch
+  .addEventListener(
+
+    "input",
+
+    renderTrackList
+
+  );
+
 
 
 /*
- * input = immediate dragging response
- * change = backup for browsers/input methods that trigger
- * change at the end of interaction
+ * One click listener handles every track row,
+ * including rows created after searching.
  */
 
-elements.volumeControl.addEventListener(
-  "input",
-  updateVolume
-);
+elements.trackList
+  .addEventListener(
+
+    "click",
+
+    (event) => {
+
+      const row =
+        event.target.closest(
+          ".track-row"
+        );
 
 
-elements.volumeControl.addEventListener(
-  "change",
-  updateVolume
-);
+      if (
+        !row ||
+        row.disabled
+      ) {
+
+        return;
+
+      }
 
 
-elements.trackSearch.addEventListener(
-  "input",
-  searchTracks
-);
+      loadTrack(
+
+        Number(
+          row.dataset.trackIndex
+        ),
+
+        {
+          addToHistory: true,
+          autoplay: true,
+          scroll: true
+        }
+
+      );
+
+    }
+
+  );
+
 
 
 /* =========================================================
    START
    ========================================================= */
 
-setControlsEnabled(false);
+loadPreferences();
+
+
+setControlsEnabled(
+  false
+);
+
 
 loadTracks();
