@@ -21,6 +21,10 @@ const state = {
 
   playerReady: false,
 
+  youtubeApiReady: false,
+
+  playerRequested: false,
+
   tracksReady: false,
 
   initialized: false,
@@ -264,6 +268,116 @@ function setPlayerIframeIdentity() {
     "allow",
     "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
   );
+
+}
+
+
+
+function getInitialEmbedVideoId() {
+
+  if (state.savedYoutubeId) {
+
+    const savedTrack =
+      state.tracks.find(
+        (track) =>
+          track.youtubeId ===
+            state.savedYoutubeId
+      );
+
+
+    if (savedTrack) {
+
+      return savedTrack.youtubeId;
+
+    }
+
+  }
+
+
+  return state.tracks[0]?.youtubeId || "";
+
+}
+
+
+
+function createYouTubeIframe(
+  youtubeId
+) {
+
+  const currentNode =
+    document.querySelector(
+      "#youtube-player"
+    );
+
+
+  if (!currentNode) {
+
+    return null;
+
+  }
+
+
+  const parameters =
+    new URLSearchParams({
+      enablejsapi: "1",
+      controls: "1",
+      playsinline: "1",
+      rel: "0",
+      origin: getPageOrigin(),
+      widget_referrer: getWidgetReferrer()
+    });
+
+
+  const iframe =
+    document.createElement(
+      "iframe"
+    );
+
+
+  iframe.id =
+    "youtube-player";
+
+
+  iframe.title =
+    "YouTube music player";
+
+
+  iframe.width =
+    "100%";
+
+
+  iframe.height =
+    "100%";
+
+
+  iframe.src =
+    `https://www.youtube.com/embed/${youtubeId}?${parameters}`;
+
+
+  iframe.allow =
+    "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+
+
+  iframe.allowFullscreen =
+    true;
+
+
+  iframe.referrerPolicy =
+    "strict-origin-when-cross-origin";
+
+
+  iframe.setAttribute(
+    "referrerpolicy",
+    "strict-origin-when-cross-origin"
+  );
+
+
+  currentNode.replaceWith(
+    iframe
+  );
+
+
+  return iframe;
 
 }
 
@@ -1844,6 +1958,9 @@ async function loadTracks() {
     renderTrackList();
 
 
+    createYouTubePlayer();
+
+
     initializePlayer();
 
   } catch (error) {
@@ -1878,91 +1995,100 @@ async function loadTracks() {
    YOUTUBE API
    ========================================================= */
 
-window.onYouTubeIframeAPIReady =
-  function onYouTubeIframeAPIReady() {
+function createYouTubePlayer() {
 
-    state.player =
-      new YT.Player(
+  if (
+    state.playerRequested ||
+    !state.youtubeApiReady ||
+    !state.tracksReady ||
+    !window.YT ||
+    typeof window.YT.Player !==
+      "function"
+  ) {
 
-        "youtube-player",
+    return;
 
-        {
-
-          width:
-            "100%",
-
-          height:
-            "100%",
+  }
 
 
-          playerVars: {
+  const iframe =
+    createYouTubeIframe(
+      getInitialEmbedVideoId()
+    );
 
-            /*
-             * Keep native YouTube controls,
-             * including its seek bar.
-             */
 
-            controls: 1,
+  if (!iframe) {
 
-            playsinline: 1,
+    return;
 
-            rel: 0,
+  }
 
-            widget_referrer:
-              getWidgetReferrer(),
 
-            /*
-             * Recommended when controlling
-             * the player through the JS API.
-             */
+  state.playerRequested =
+    true;
 
-            origin:
-              getPageOrigin()
+
+  state.player =
+    new YT.Player(
+
+      iframe,
+
+      {
+
+        events: {
+
+          onReady: () => {
+
+            state.playerReady =
+              true;
+
+
+            setPlayerIframeIdentity();
+
+
+            updateVolume();
+
+
+            initializePlayer();
 
           },
 
 
-          events: {
-
-            onReady: () => {
-
-              state.playerReady =
-                true;
+          onStateChange:
+            handlePlayerStateChange,
 
 
-              setPlayerIframeIdentity();
+          onError:
+            handlePlayerError,
 
 
-              updateVolume();
-
-
-              initializePlayer();
-
-            },
-
-
-            onStateChange:
-              handlePlayerStateChange,
-
-
-            onError:
-              handlePlayerError,
-
-
-            onAutoplayBlocked:
-              handleAutoplayBlocked
-
-          }
+          onAutoplayBlocked:
+            handleAutoplayBlocked
 
         }
 
-      );
+      }
 
-
-    window.setTimeout(
-      setPlayerIframeIdentity,
-      0
     );
+
+
+  window.setTimeout(
+    setPlayerIframeIdentity,
+    0
+  );
+
+}
+
+
+
+window.onYouTubeIframeAPIReady =
+  function onYouTubeIframeAPIReady() {
+
+    state.youtubeApiReady =
+      true;
+
+
+    createYouTubePlayer();
 
   };
 
