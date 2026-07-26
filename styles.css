@@ -298,37 +298,29 @@ input:focus-visible {
 
 .meter-images {
   display: flex;
-
   align-items: center;
+  justify-content: flex-end;
 
-  justify-content:
-    flex-end;
+  gap: 0;
 
-  gap: 2px;
-
-  flex:
-    0 1 auto;
+  flex: 0 1 auto;
 }
-
-
-/*
-   The old live version was only 112px wide.
-   These now reach about 190px each.
-*/
 
 .meter-image {
   display: block;
 
-  width:
-    clamp(
-      155px,
-      20vw,
-      190px
-    );
+  width: clamp(
+    155px,
+    20vw,
+    190px
+  );
 
   height: auto;
 
   object-fit: contain;
+
+  margin-left: -30px;
+  margin-right: -30px;
 
   border-radius: 2px;
 
@@ -338,7 +330,6 @@ input:focus-visible {
       rgba(0, 0, 0, 0.35)
     );
 }
-
 
 
 /* =========================================================
