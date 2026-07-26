@@ -318,6 +318,7 @@ input:disabled {
   border: 0;
   filter: contrast(1.12) saturate(0.84) brightness(0.92) sepia(0.12);
   transform: scale(1.01);
+  touch-action: manipulation;
 }
 
 .decorative-knobs {
@@ -871,6 +872,15 @@ input:disabled {
   .video-wrap {
     min-width: 0;
     border-width: 6px;
+  }
+
+  .video-wrap::before,
+  .video-wrap::after {
+    display: none;
+  }
+
+  .video-wrap iframe {
+    transform: none;
   }
 
   .decorative-knobs {
