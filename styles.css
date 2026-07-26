@@ -60,15 +60,42 @@ input {
   font: inherit;
 }
 
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+.visually-hidden {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  padding: 0;
+  margin: -1px;
+
+  overflow: hidden;
+
+  clip: rect(0, 0, 0, 0);
+
+  white-space: nowrap;
+
+  border: 0;
+}
+
+
 /* =========================================================
    PLAYER CONTAINER
    ========================================================= */
 
 .player-shell {
   width: min(100% - 2rem, 900px);
+
   margin: 0 auto;
+
   padding: 2rem 0;
 }
+
 
 /* =========================================================
    RECEIVER CABINET
@@ -76,22 +103,28 @@ input {
 
 .player-card {
   position: relative;
+
   isolation: isolate;
+
   overflow: hidden;
 
-  padding: clamp(1.5rem, 4vw, 2.5rem);
+  padding:
+    clamp(1.5rem, 4vw, 2.5rem);
 
   border: 2px solid #312117;
+
   border-radius: 8px;
 
-  /* Ventilation slots + brushed aluminum */
   background:
+
     repeating-linear-gradient(
       90deg,
       #24231f 0 3px,
       transparent 3px 10px
     )
-    top 12px center / calc(100% - 90px) 8px no-repeat,
+    top 12px center /
+    calc(100% - 90px) 8px
+    no-repeat,
 
     repeating-linear-gradient(
       0deg,
@@ -115,31 +148,37 @@ input {
     inset 0 -3px rgba(0, 0, 0, 0.35);
 }
 
-/* Keep actual player content above decorative wood panels */
 
 .player-card > * {
   position: relative;
+
   z-index: 1;
 }
+
 
 /* Walnut side panels */
 
 .player-card::before,
 .player-card::after {
   content: "";
+
   position: absolute;
+
   z-index: 0;
 
   top: 0;
   bottom: 0;
+
   width: 25px;
 
   background:
+
     repeating-linear-gradient(
       92deg,
       rgba(255, 255, 255, 0.045) 0 2px,
       transparent 2px 7px
     ),
+
     linear-gradient(
       90deg,
       var(--walnut-dark),
@@ -161,26 +200,37 @@ input {
   right: 0;
 }
 
+
 /* =========================================================
-   HEADER / ANALOG METERS
+   HEADER
    ========================================================= */
 
 .player-header {
-  position: relative;
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 1.5rem;
 
   min-height: 118px;
+
   margin-bottom: 1.25rem;
-  padding: 1.4rem 290px 1.4rem 1.4rem;
+
+  padding: 1.4rem;
 
   border: 1px solid #646159;
+
   border-radius: 3px;
 
   background:
+
     repeating-linear-gradient(
       0deg,
       rgba(255, 255, 255, 0.055) 0 1px,
       rgba(0, 0, 0, 0.025) 1px 2px
     ),
+
     linear-gradient(
       90deg,
       #99968e,
@@ -193,64 +243,65 @@ input {
     0 1px rgba(255, 255, 255, 0.75);
 }
 
-/* Two decorative analog meters */
 
-.player-header::before,
-.player-header::after {
-  content: "";
-  position: absolute;
-  top: 23px;
+.header-copy {
+  min-width: 0;
+
+  flex: 1;
+}
+
+
+/* =========================================================
+   REAL METER IMAGES
+   ========================================================= */
+
+.meter-images {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  flex-shrink: 0;
+}
+
+
+.meter-image {
+  display: block;
 
   width: 112px;
   height: 69px;
 
-  border: 5px solid #26251f;
+  object-fit: contain;
+
   border-radius: 2px;
 
-  background:
-    linear-gradient(
-      76deg,
-      transparent 48%,
-      #7a2814 49%,
-      #7a2814 51%,
-      transparent 52%
-    ),
-    repeating-linear-gradient(
-      90deg,
-      transparent 0 9px,
-      rgba(82, 52, 17, 0.65) 9px 10px
-    ),
-    linear-gradient(
-      180deg,
-      #f0c36b,
-      #b97820
+  filter:
+    drop-shadow(
+      0 3px 3px
+      rgba(0, 0, 0, 0.32)
     );
-
-  box-shadow:
-    inset 0 0 10px rgba(65, 34, 7, 0.55),
-    0 1px rgba(255, 255, 255, 0.65),
-    0 3px 6px rgba(0, 0, 0, 0.25);
 }
 
-.player-header::before {
-  right: 150px;
-}
-
-.player-header::after {
-  right: 25px;
-}
 
 .eyebrow {
   margin: 0 0 0.4rem;
 
   color: var(--engraved-dark);
+
   font-size: 0.72rem;
+
   font-weight: 900;
+
   letter-spacing: 0.2em;
+
   text-transform: uppercase;
 
-  text-shadow: 0 1px var(--engraved-light);
+  text-shadow:
+    0 1px
+    var(--engraved-light);
 }
+
 
 h1,
 h2,
@@ -258,12 +309,17 @@ p {
   margin-top: 0;
 }
 
+
 h1 {
   margin-bottom: 0;
 
   color: #292823;
-  font-size: clamp(1.6rem, 4vw, 2.45rem);
+
+  font-size:
+    clamp(1.6rem, 4vw, 2.45rem);
+
   font-weight: 700;
+
   letter-spacing: 0.055em;
 
   text-shadow:
@@ -271,17 +327,20 @@ h1 {
     0 -1px rgba(0, 0, 0, 0.35);
 }
 
+
 /* =========================================================
    CRT VIDEO AREA
    ========================================================= */
 
 .video-wrap {
   position: relative;
+
   overflow: hidden;
 
   aspect-ratio: 16 / 9;
 
   border: 13px solid #26251f;
+
   border-radius: 17px;
 
   background: #020302;
@@ -293,54 +352,66 @@ h1 {
     0 9px 15px rgba(0, 0, 0, 0.35);
 }
 
+
 .video-wrap iframe {
   position: relative;
+
   z-index: 1;
 
   display: block;
+
   width: 100%;
   height: 100%;
 
   border: 0;
 }
 
-/* Subtle CRT scan lines */
+
+/* CRT scan lines */
 
 .video-wrap::after {
   content: "";
+
   position: absolute;
+
   z-index: 2;
 
   inset: 0;
 
   pointer-events: none;
 
-  background: repeating-linear-gradient(
-    0deg,
-    transparent 0 3px,
-    rgba(0, 0, 0, 0.09) 3px 4px
-  );
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 3px,
+      rgba(0, 0, 0, 0.09) 3px 4px
+    );
 
   opacity: 0.3;
 }
 
-/* Soft glass highlight */
+
+/* Glass highlight */
 
 .video-wrap::before {
   content: "";
+
   position: absolute;
+
   z-index: 3;
 
   inset: 0;
 
   pointer-events: none;
 
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.07),
-    transparent 30%
-  );
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.07),
+      transparent 30%
+    );
 }
+
 
 /* =========================================================
    SONG INFORMATION DISPLAY
@@ -348,18 +419,23 @@ h1 {
 
 .track-info {
   min-height: 8.5rem;
+
   margin-top: 1.3rem;
+
   padding: 1.25rem 1.4rem;
 
   border: 5px solid #34332d;
+
   border-radius: 3px;
 
   background:
+
     linear-gradient(
       180deg,
       rgba(255, 255, 255, 0.045),
       transparent 40%
     ),
+
     linear-gradient(
       90deg,
       #080907,
@@ -373,12 +449,17 @@ h1 {
     0 6px 10px rgba(0, 0, 0, 0.25);
 }
 
+
 .track-info h2 {
   margin-bottom: 0.45rem;
 
   color: var(--amber-bright);
-  font-size: clamp(1.35rem, 4vw, 2rem);
+
+  font-size:
+    clamp(1.35rem, 4vw, 2rem);
+
   font-weight: 700;
+
   letter-spacing: 0.035em;
 
   text-shadow:
@@ -386,21 +467,30 @@ h1 {
     0 0 14px rgba(218, 145, 46, 0.25);
 }
 
+
 .track-info p {
   color: #d4af72;
 }
+
 
 .status {
   margin-bottom: 0.5rem;
 
   color: var(--amber);
+
   font-size: 0.78rem;
+
   font-weight: 800;
+
   letter-spacing: 0.15em;
+
   text-transform: uppercase;
 
-  text-shadow: 0 0 7px rgba(218, 145, 46, 0.4);
+  text-shadow:
+    0 0 7px
+    rgba(218, 145, 46, 0.4);
 }
+
 
 /* =========================================================
    MAIN METAL PUSH BUTTONS
@@ -408,25 +498,33 @@ h1 {
 
 .controls {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
   gap: 0.8rem;
 
   margin-top: 1.25rem;
 }
 
-button {
+
+.controls button {
   min-height: 3.35rem;
+
   padding: 0.75rem 1rem;
 
   border: 1px solid #55524c;
+
   border-radius: 3px;
 
   background:
+
     repeating-linear-gradient(
       0deg,
       rgba(255, 255, 255, 0.06) 0 1px,
       rgba(0, 0, 0, 0.025) 1px 2px
     ),
+
     linear-gradient(
       180deg,
       #ddd9d0 0%,
@@ -436,9 +534,13 @@ button {
     );
 
   color: #25241f;
+
   font-size: 0.82rem;
+
   font-weight: 900;
+
   letter-spacing: 0.1em;
+
   text-transform: uppercase;
 
   cursor: pointer;
@@ -454,12 +556,15 @@ button {
     box-shadow 100ms ease;
 }
 
-button:hover:not(:disabled) {
+
+.controls button:hover:not(:disabled) {
   transform: translateY(-1px);
+
   filter: brightness(1.08);
 }
 
-button:active:not(:disabled) {
+
+.controls button:active:not(:disabled) {
   transform: translateY(3px);
 
   box-shadow:
@@ -468,12 +573,14 @@ button:active:not(:disabled) {
     inset 0 2px 4px rgba(0, 0, 0, 0.28);
 }
 
+
 /* Illuminated primary button */
 
-button.primary {
+.controls button.primary {
   border-color: #744914;
 
   background:
+
     linear-gradient(
       180deg,
       var(--amber-bright) 0%,
@@ -483,6 +590,7 @@ button.primary {
     );
 
   color: #271605;
+
   font-weight: 900;
 
   box-shadow:
@@ -491,8 +599,10 @@ button.primary {
     inset 0 1px rgba(255, 255, 255, 0.7);
 }
 
-button.primary:hover:not(:disabled) {
+
+.controls button.primary:hover:not(:disabled) {
   background:
+
     linear-gradient(
       180deg,
       #ffd078,
@@ -502,17 +612,23 @@ button.primary:hover:not(:disabled) {
     );
 }
 
+
 button:focus-visible,
 input:focus-visible {
-  outline: 3px solid var(--amber-bright);
+  outline:
+    3px solid
+    var(--amber-bright);
+
   outline-offset: 4px;
 }
 
-button:disabled,
-input:disabled {
+
+button:disabled {
   cursor: not-allowed;
+
   opacity: 0.45;
 }
+
 
 /* =========================================================
    LOWER CONTROL PANEL
@@ -520,22 +636,30 @@ input:disabled {
 
 .secondary-controls {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+
+  grid-template-columns:
+    auto minmax(0, 1fr);
+
   gap: 1.25rem;
+
   align-items: center;
 
   margin-top: 1.5rem;
+
   padding: 1.15rem 1.25rem;
 
   border: 1px solid #6d6a63;
+
   border-radius: 3px;
 
   background:
+
     repeating-linear-gradient(
       0deg,
       rgba(255, 255, 255, 0.055) 0 1px,
       rgba(0, 0, 0, 0.028) 1px 2px
     ),
+
     linear-gradient(
       90deg,
       #908d85,
@@ -548,15 +672,23 @@ input:disabled {
     0 1px rgba(255, 255, 255, 0.7);
 }
 
+
 .secondary-controls label {
   color: var(--engraved-dark);
+
   font-size: 0.74rem;
+
   font-weight: 900;
+
   letter-spacing: 0.16em;
+
   text-transform: uppercase;
 
-  text-shadow: 0 1px var(--engraved-light);
+  text-shadow:
+    0 1px
+    var(--engraved-light);
 }
+
 
 /* =========================================================
    VOLUME SLIDER
@@ -567,10 +699,14 @@ input[type="range"] {
   height: 28px;
 
   appearance: none;
+
   -webkit-appearance: none;
 
   background: transparent;
+
+  cursor: pointer;
 }
+
 
 /* Chrome / Safari / Edge track */
 
@@ -578,14 +714,17 @@ input[type="range"]::-webkit-slider-runnable-track {
   height: 7px;
 
   border: 1px solid #393731;
+
   border-radius: 2px;
 
   background:
+
     repeating-linear-gradient(
       90deg,
       transparent 0 15px,
       rgba(255, 194, 96, 0.5) 15px 16px
     ),
+
     linear-gradient(
       90deg,
       #3c280f,
@@ -598,27 +737,33 @@ input[type="range"]::-webkit-slider-runnable-track {
     0 1px rgba(255, 255, 255, 0.5);
 }
 
+
 input[type="range"]::-webkit-slider-thumb {
   width: 28px;
   height: 28px;
+
   margin-top: -11px;
 
   appearance: none;
+
   -webkit-appearance: none;
 
   border: 1px solid #4c4a44;
+
   border-radius: 50%;
 
-  background: repeating-conic-gradient(
-    from 0deg,
-    #dedbd2 0deg 3deg,
-    #85827b 3deg 6deg
-  );
+  background:
+    repeating-conic-gradient(
+      from 0deg,
+      #dedbd2 0deg 3deg,
+      #85827b 3deg 6deg
+    );
 
   box-shadow:
     0 3px 5px rgba(0, 0, 0, 0.6),
     inset 0 0 0 4px #aaa79f;
 }
+
 
 /* Firefox track */
 
@@ -626,17 +771,21 @@ input[type="range"]::-moz-range-track {
   height: 7px;
 
   border: 1px solid #393731;
+
   border-radius: 2px;
 
-  background: linear-gradient(
-    90deg,
-    #3c280f,
-    var(--amber),
-    #484135
-  );
+  background:
+    linear-gradient(
+      90deg,
+      #3c280f,
+      var(--amber),
+      #484135
+    );
 
-  box-shadow: inset 0 1px 3px #000;
+  box-shadow:
+    inset 0 1px 3px #000;
 }
+
 
 /* Firefox knob */
 
@@ -645,6 +794,7 @@ input[type="range"]::-moz-range-thumb {
   height: 27px;
 
   border: 1px solid #4c4a44;
+
   border-radius: 50%;
 
   background: #aaa79f;
@@ -654,58 +804,462 @@ input[type="range"]::-moz-range-thumb {
     inset 0 0 0 4px #d5d2c9;
 }
 
+
+/* =========================================================
+   RECORD LIBRARY
+   ========================================================= */
+
+.track-browser {
+  margin-top: 1.5rem;
+
+  padding: 1.15rem;
+
+  border: 1px solid #656159;
+
+  border-radius: 3px;
+
+  background:
+
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.045) 0 1px,
+      rgba(0, 0, 0, 0.025) 1px 2px
+    ),
+
+    linear-gradient(
+      90deg,
+      #8c8981,
+      #cbc8bf 50%,
+      #8c8981
+    );
+
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.28),
+    0 1px rgba(255, 255, 255, 0.65),
+    0 5px 10px rgba(0, 0, 0, 0.18);
+}
+
+
+/* Library heading */
+
+.track-browser-header {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 1rem;
+
+  margin-bottom: 0.85rem;
+}
+
+
+.track-browser-header h2 {
+  margin: 0;
+
+  color: var(--engraved-dark);
+
+  font-size: 0.78rem;
+
+  font-weight: 900;
+
+  letter-spacing: 0.17em;
+
+  text-transform: uppercase;
+
+  text-shadow:
+    0 1px
+    var(--engraved-light);
+}
+
+
+#track-count {
+  color: #514e47;
+
+  font-size: 0.68rem;
+
+  font-weight: 800;
+
+  letter-spacing: 0.08em;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   SEARCH INPUT
+   ========================================================= */
+
+.track-search-wrap {
+  margin-bottom: 0.85rem;
+}
+
+
+#track-search {
+  width: 100%;
+
+  padding:
+    0.78rem 0.9rem;
+
+  border:
+    4px solid #34332d;
+
+  border-radius: 2px;
+
+  outline: none;
+
+  background:
+
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.035),
+      transparent 45%
+    ),
+
+    #0c0d0b;
+
+  color:
+    var(--amber-bright);
+
+  font-size: 0.86rem;
+
+  letter-spacing: 0.025em;
+
+  caret-color:
+    var(--amber-bright);
+
+  box-shadow:
+    inset 0 0 14px rgba(0, 0, 0, 0.9),
+    0 1px rgba(255, 255, 255, 0.45);
+}
+
+
+#track-search::placeholder {
+  color: #8d7145;
+
+  opacity: 0.8;
+}
+
+
+#track-search:focus {
+  border-color: #5b4a2f;
+
+  box-shadow:
+    inset 0 0 14px rgba(0, 0, 0, 0.9),
+    0 0 10px rgba(217, 151, 50, 0.25);
+}
+
+
+/* Remove default Safari search decoration */
+
+#track-search::-webkit-search-cancel-button {
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   SCROLLABLE TRACK WINDOW
+   ========================================================= */
+
+.track-list {
+  height: 365px;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  border: 5px solid #34332d;
+
+  border-radius: 3px;
+
+  background:
+
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.035),
+      transparent 20%
+    ),
+
+    linear-gradient(
+      90deg,
+      #070806,
+      #12140f 50%,
+      #070806
+    );
+
+  box-shadow:
+    inset 0 0 22px rgba(0, 0, 0, 0.95),
+    0 1px rgba(255, 255, 255, 0.5);
+
+  scrollbar-width: thin;
+
+  scrollbar-color:
+    var(--amber-dim)
+    #17140f;
+}
+
+
+/* Chrome / Safari scrollbar */
+
+.track-list::-webkit-scrollbar {
+  width: 12px;
+}
+
+
+.track-list::-webkit-scrollbar-track {
+  background: #17140f;
+
+  border-left:
+    1px solid #33291d;
+}
+
+
+.track-list::-webkit-scrollbar-thumb {
+  background:
+
+    linear-gradient(
+      90deg,
+      #72501f,
+      var(--amber),
+      #72501f
+    );
+
+  border:
+    2px solid #17140f;
+
+  border-radius: 2px;
+}
+
+
+/* =========================================================
+   TRACK ROWS
+   ========================================================= */
+
+.track-row {
+  display: block;
+
+  width: 100%;
+
+  min-height: 0;
+
+  padding:
+    0.82rem 0.95rem;
+
+  border: 0;
+
+  border-bottom:
+    1px solid
+    rgba(174, 128, 61, 0.18);
+
+  border-radius: 0;
+
+  background: transparent;
+
+  color: #d6a457;
+
+  text-align: left;
+
+  text-transform: none;
+
+  letter-spacing: normal;
+
+  cursor: pointer;
+
+  box-shadow: none;
+
+  transition:
+    background 100ms ease,
+    color 100ms ease;
+}
+
+
+.track-row:last-child {
+  border-bottom: 0;
+}
+
+
+.track-row:hover {
+  transform: none;
+
+  filter: none;
+
+  background:
+    rgba(217, 151, 50, 0.09);
+}
+
+
+.track-row:active {
+  transform: none;
+
+  box-shadow: none;
+
+  background:
+    rgba(217, 151, 50, 0.14);
+}
+
+
+.track-row-title {
+  display: block;
+
+  color: #e6b86f;
+
+  font-size: 0.92rem;
+
+  font-weight: 700;
+
+  line-height: 1.25;
+
+  text-shadow:
+    0 0 6px
+    rgba(218, 145, 46, 0.12);
+}
+
+
+.track-row-meta {
+  display: block;
+
+  margin-top: 0.28rem;
+
+  overflow: hidden;
+
+  color: #9d814f;
+
+  font-size: 0.73rem;
+
+  line-height: 1.25;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   CURRENTLY PLAYING TRACK
+   ========================================================= */
+
+.track-row.is-active {
+  position: relative;
+
+  background:
+
+    linear-gradient(
+      90deg,
+      rgba(255, 179, 67, 0.23),
+      rgba(255, 179, 67, 0.08) 75%,
+      transparent
+    );
+
+  box-shadow:
+    inset 4px 0
+    var(--amber-bright);
+}
+
+
+.track-row.is-active .track-row-title {
+  color: var(--amber-bright);
+
+  text-shadow:
+    0 0 6px
+    rgba(255, 183, 74, 0.65),
+    0 0 14px
+    rgba(218, 145, 46, 0.3);
+}
+
+
+.track-row.is-active .track-row-meta {
+  color: #d8a85d;
+}
+
+
 /* =========================================================
    RESPONSIVE
    ========================================================= */
 
 @media (max-width: 760px) {
+
   .player-header {
     min-height: auto;
-    padding-right: 1.4rem;
   }
 
-  .player-header::before,
-  .player-header::after {
+  .meter-images {
     display: none;
   }
+
 }
 
+
 @media (max-width: 620px) {
+
   .player-shell {
-    width: min(100% - 1rem, 900px);
+    width:
+      min(100% - 1rem, 900px);
+
     padding: 0.75rem 0;
   }
+
 
   .player-card {
     padding: 1.35rem;
   }
+
 
   .player-card::before,
   .player-card::after {
     width: 14px;
   }
 
+
+  .player-header {
+    padding: 1.2rem;
+  }
+
+
   .video-wrap {
     border-width: 8px;
+
     border-radius: 11px;
   }
+
 
   .controls {
     grid-template-columns: 1fr;
   }
 
+
   .track-info {
     min-height: 10rem;
   }
 
+
   .secondary-controls {
     grid-template-columns: 1fr;
+
     gap: 0.7rem;
   }
+
+
+  .track-browser-header {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 0.4rem;
+  }
+
+
+  .track-list {
+    height: 320px;
+  }
+
 }
 
+
 @media (prefers-reduced-motion: reduce) {
-  button {
+
+  .controls button,
+  .track-row {
     transition: none;
   }
+
 }
