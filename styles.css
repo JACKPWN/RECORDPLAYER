@@ -304,7 +304,7 @@ input:focus-visible {
   justify-content:
     flex-end;
 
-  gap: 8px;
+  gap: 2px;
 
   flex:
     0 1 auto;
