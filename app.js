@@ -102,44 +102,9 @@ const elements = {
       ".player-card"
     ),
 
-  mediaTitle:
-    document.querySelector(
-      "#media-title"
-    ),
-
-  mediaMeta:
-    document.querySelector(
-      "#media-meta"
-    ),
-
-  bayPlay:
-    document.querySelector(
-      "#bay-play"
-    ),
-
   volumeValue:
     document.querySelector(
       "#volume-value"
-    ),
-
-  bassControl:
-    document.querySelector(
-      "#bass-control"
-    ),
-
-  bassValue:
-    document.querySelector(
-      "#bass-value"
-    ),
-
-  trebleControl:
-    document.querySelector(
-      "#treble-control"
-    ),
-
-  trebleValue:
-    document.querySelector(
-      "#treble-value"
     )
 };
 
@@ -304,26 +269,6 @@ function setPlayerIframeIdentity() {
 
 
 
-function clampTone(value) {
-
-  const number =
-    Number(value);
-
-
-  return Number.isFinite(number)
-    ? Math.max(
-        -10,
-        Math.min(
-          10,
-          number
-        )
-      )
-    : 0;
-
-}
-
-
-
 function formatTrackDetails(track) {
 
   const artist =
@@ -347,102 +292,10 @@ function formatTrackDetails(track) {
 
 
 
-function signedValue(value) {
+function syncVolumeReadout(volume) {
 
-  const number =
-    Number(value);
-
-
-  return number > 0
-    ? `+${number}`
-    : `${number}`;
-
-}
-
-
-
-function setKnob(
-  input,
-  valueNode,
-  formatter = (value) => value
-) {
-
-  if (
-    !input ||
-    !valueNode
-  ) {
-
-    return;
-
-  }
-
-
-  const min =
-    Number(input.min);
-
-
-  const max =
-    Number(input.max);
-
-
-  const value =
-    Number(input.value);
-
-
-  const percent =
-    (value - min) /
-    (max - min);
-
-
-  const angle =
-    -135 +
-    percent * 270;
-
-
-  const control =
-    input.closest(
-      ".knob-control"
-    );
-
-
-  if (control) {
-
-    control.style.setProperty(
-      "--knob-angle",
-      `${angle}deg`
-    );
-
-  }
-
-
-  valueNode.textContent =
-    formatter(input.value);
-
-}
-
-
-
-function syncKnobs() {
-
-  setKnob(
-    elements.bassControl,
-    elements.bassValue,
-    signedValue
-  );
-
-
-  setKnob(
-    elements.trebleControl,
-    elements.trebleValue,
-    signedValue
-  );
-
-
-  setKnob(
-    elements.volumeControl,
-    elements.volumeValue,
-    (value) => `${value}%`
-  );
+  elements.volumeValue.textContent =
+    `${volume}%`;
 
 }
 
@@ -468,16 +321,6 @@ function syncReceiverPlayback(
     playing
       ? "Pause"
       : "Play";
-
-
-  if (elements.bayPlay) {
-
-    elements.bayPlay.textContent =
-      playing
-        ? "Pause"
-        : "Play";
-
-  }
 
 }
 
@@ -507,22 +350,6 @@ function loadPreferences() {
       );
 
 
-    elements.bassControl.value =
-      String(
-        clampTone(
-          saved.bass
-        )
-      );
-
-
-    elements.trebleControl.value =
-      String(
-        clampTone(
-          saved.treble
-        )
-      );
-
-
     state.shuffle =
       typeof saved.shuffle ===
       "boolean"
@@ -546,14 +373,6 @@ function loadPreferences() {
 
     elements.volumeControl.value =
       "70";
-
-
-    elements.bassControl.value =
-      "0";
-
-
-    elements.trebleControl.value =
-      "0";
 
   }
 
@@ -585,21 +404,7 @@ function savePreferences() {
           state.savedYoutubeId,
 
         shuffle:
-          state.shuffle,
-
-        bass:
-          clampTone(
-            elements
-              .bassControl
-              .value
-          ),
-
-        treble:
-          clampTone(
-            elements
-              .trebleControl
-              .value
-          )
+          state.shuffle
 
       })
 
@@ -672,14 +477,6 @@ function setControlsEnabled(
   elements.previousButton.disabled =
     !enabled ||
     state.history.length === 0;
-
-
-  if (elements.bayPlay) {
-
-    elements.bayPlay.disabled =
-      !enabled;
-
-  }
 
 }
 
@@ -905,23 +702,6 @@ function renderCurrentTrack(
 
   elements.details.textContent =
     details;
-
-
-  if (elements.mediaTitle) {
-
-    elements.mediaTitle.textContent =
-      track.title ||
-      "Unknown Track";
-
-  }
-
-
-  if (elements.mediaMeta) {
-
-    elements.mediaMeta.textContent =
-      details;
-
-  }
 
 
   setReadyStatus();
@@ -1163,10 +943,36 @@ function scrollCurrentTrackIntoView() {
 
   if (activeRow) {
 
-    activeRow.scrollIntoView({
-      block:
-        "nearest"
-    });
+    const listRect =
+      elements
+        .trackList
+        .getBoundingClientRect();
+
+
+    const rowRect =
+      activeRow
+        .getBoundingClientRect();
+
+
+    if (
+      rowRect.top <
+      listRect.top
+    ) {
+
+      elements.trackList.scrollTop -=
+        listRect.top -
+        rowRect.top;
+
+    } else if (
+      rowRect.bottom >
+      listRect.bottom
+    ) {
+
+      elements.trackList.scrollTop +=
+        rowRect.bottom -
+        listRect.bottom;
+
+    }
 
   }
 
@@ -1341,7 +1147,9 @@ function playNextTrack(
   {
     addToHistory = true,
 
-    autoplay = true
+    autoplay = true,
+
+    scroll = true
   } = {}
 ) {
 
@@ -1379,7 +1187,7 @@ function playNextTrack(
     {
       addToHistory,
       autoplay,
-      scroll: true
+      scroll
     }
 
   );
@@ -1392,7 +1200,11 @@ function playNextTrack(
    PREVIOUS
    ========================================================= */
 
-function playPreviousTrack() {
+function playPreviousTrack(
+  {
+    scroll = true
+  } = {}
+) {
 
   /*
    * Skip any tracks that have failed
@@ -1422,7 +1234,7 @@ function playPreviousTrack() {
         {
           addToHistory: false,
           autoplay: false,
-          scroll: true
+          scroll
         }
 
       );
@@ -1529,7 +1341,9 @@ function updateVolume() {
     String(volume);
 
 
-  syncKnobs();
+  syncVolumeReadout(
+    volume
+  );
 
 
   /*
@@ -1568,37 +1382,6 @@ function updateVolume() {
     state.player.unMute();
 
   }
-
-}
-
-
-
-function updateToneControls() {
-
-  elements.bassControl.value =
-    String(
-      clampTone(
-        elements
-          .bassControl
-          .value
-      )
-    );
-
-
-  elements.trebleControl.value =
-    String(
-      clampTone(
-        elements
-          .trebleControl
-          .value
-      )
-    );
-
-
-  syncKnobs();
-
-
-  savePreferences();
 
 }
 
@@ -2194,7 +1977,10 @@ elements.previousButton
 
     "click",
 
-    playPreviousTrack
+    () =>
+      playPreviousTrack({
+        scroll: false
+      })
 
   );
 
@@ -2211,21 +1997,6 @@ elements.playButton
 
 
 
-if (elements.bayPlay) {
-
-  elements.bayPlay
-    .addEventListener(
-
-      "click",
-
-      togglePlayback
-
-    );
-
-}
-
-
-
 elements.nextButton
   .addEventListener(
 
@@ -2233,7 +2004,8 @@ elements.nextButton
 
     () =>
       playNextTrack({
-        autoplay: false
+        autoplay: false,
+        scroll: false
       })
 
   );
@@ -2268,50 +2040,6 @@ elements.volumeControl
     "change",
 
     updateVolume
-
-  );
-
-
-
-elements.bassControl
-  .addEventListener(
-
-    "input",
-
-    updateToneControls
-
-  );
-
-
-
-elements.bassControl
-  .addEventListener(
-
-    "change",
-
-    updateToneControls
-
-  );
-
-
-
-elements.trebleControl
-  .addEventListener(
-
-    "input",
-
-    updateToneControls
-
-  );
-
-
-
-elements.trebleControl
-  .addEventListener(
-
-    "change",
-
-    updateToneControls
 
   );
 
@@ -2383,7 +2111,11 @@ elements.trackList
 loadPreferences();
 
 
-syncKnobs();
+syncVolumeReadout(
+  clampVolume(
+    elements.volumeControl.value
+  )
+);
 
 
 syncReceiverPlayback(
