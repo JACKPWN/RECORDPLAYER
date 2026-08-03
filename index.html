@@ -7,16 +7,16 @@
   <meta name="theme-color" content="#17100a">
   <meta
     name="description"
-    content="Mom & Pop Tunes By Dom.com — a hand-curated vinyl collection played through the M&J Stereo Receiver."
+    content="Mom & Pop Tunes By Dom.com — a hand-curated 1960s–1970s collection played through the M&J Stereo Receiver."
   >
-  <title>MJ Records</title>
+  <title>M&amp;J Records</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap"
   >
-  <link rel="stylesheet" href="styles.css?v=20260803-5">
+  <link rel="stylesheet" href="styles.css?v=20260803-6">
 </head>
 <body>
   <a class="skip-link" href="#record-library">Skip to record library</a>
@@ -84,6 +84,8 @@
                 <span class="hardware-kicker">Selected program</span>
                 <strong id="program-track">Waiting for the library</strong>
               </div>
+              <!-- Cache-compatibility target for older app.js revisions; intentionally never displayed. -->
+              <span id="watch-video" class="watch-video-compat" hidden aria-hidden="true"></span>
             </div>
           </section>
 
@@ -270,7 +272,7 @@
 
     <footer class="manufacturer-footer" aria-label="Site information">
       <div class="footer-identity">
-        <strong>Mom &amp; Pop Tunes By Dom.com</strong>
+        <strong>Marie &amp; Jerry's Music Collection</strong>
         <span>M&amp;J Stereo Receiver</span>
       </div>
       <p>Curated and built by Dom <span aria-hidden="true">·</span> For Mom &amp; Dad</p>
@@ -282,7 +284,7 @@
     <p class="noscript-message">JavaScript is required to operate the M&amp;J Stereo Receiver.</p>
   </noscript>
 
-  <script defer src="app.js?v=20260803-2"></script>
+  <script defer src="app.js?v=20260803-6"></script>
   <script
     defer
     id="youtube-api"
