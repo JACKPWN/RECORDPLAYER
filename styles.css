@@ -609,6 +609,10 @@ input:disabled {
   white-space: nowrap;
 }
 
+.watch-video-compat {
+  display: none !important;
+}
+
 .meters {
   grid-area: meters;
   display: grid;
