@@ -4,117 +4,299 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <title>Mom&PopTunesByDom.com</title>
-  <link rel="stylesheet" href="styles.css?v=20260727-1">
+  <meta name="theme-color" content="#17100a">
+  <meta
+    name="description"
+    content="A hand-curated vinyl collection played through the M&J Stereo Receiver."
+  >
+  <title>M&J Records</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap"
+  >
+  <link rel="stylesheet" href="styles.css?v=20260802-4">
 </head>
 <body>
+  <a class="skip-link" href="#record-library">Skip to record library</a>
+
   <main class="player-shell">
-    <section class="player-card" aria-label="Marie and Jerry stereo receiver music player">
+    <h1 class="visually-hidden">Mom &amp; Pop Tunes By Dom.com</h1>
+
+    <article class="player-card" aria-label="M&J Stereo Receiver music player" data-playback-state="loading">
       <div class="faceplate">
         <div class="vents" aria-hidden="true"></div>
 
-        <header class="tuner">
+        <header class="tuner" aria-label="M&J Stereo Receiver analog tuner">
           <div class="tuner-copy">
-            <p class="brand">M&amp;J Stereo Receiver</p>
-            <p class="deck-subtitle">1960s-1970s collection / 507 tracks loaded</p>
+            <p class="brand">M&amp;J STEREO RECEIVER</p>
+            <p class="deck-subtitle">FM stereo · solid state</p>
           </div>
 
           <div class="dial-scale" aria-hidden="true">
-            <div class="scale-line"></div>
-            <div class="ticks">
-              <span class="tick"><b>88</b></span>
-              <span class="tick"></span>
-              <span class="tick"><b>92</b></span>
-              <span class="tick"></span>
-              <span class="tick"><b>96</b></span>
-              <span class="tick"></span>
-              <span class="tick"><b>100</b></span>
-              <span class="tick"></span>
-              <span class="tick"><b>104</b></span>
-              <span class="tick"></span>
-              <span class="tick"><b>108</b></span>
+            <span class="band-label">FM</span>
+            <div class="tick-rail"></div>
+            <div class="frequency-labels">
+              <span>88</span>
+              <span>92</span>
+              <span>96</span>
+              <span>100</span>
+              <span>104</span>
+              <span>108</span>
             </div>
-            <div class="dial-pointer"></div>
+            <div class="dial-pointer"><span></span></div>
           </div>
         </header>
 
         <div class="receiver-grid">
-          <section class="meters" aria-label="VU meters">
-            <div class="vu">
-              <div class="vu-scale"><span>0</span><span>1</span><span>3</span><span>5</span><span>10</span><span>50</span><span>100</span></div>
-              <div class="needle" aria-hidden="true"></div>
-              <div class="vu-label">Left</div>
+          <section class="program-bay glass-panel" aria-labelledby="program-heading">
+            <div class="program-header">
+              <div>
+                <p class="hardware-kicker">Program monitor</p>
+                <h2 id="program-heading">YouTube playback</h2>
+              </div>
+              <div class="state-indicator" aria-hidden="true">
+                <span class="state-lamp"></span>
+                <span id="program-state">Loading</span>
+              </div>
             </div>
 
-            <div class="vu">
-              <div class="vu-scale"><span>0</span><span>1</span><span>3</span><span>5</span><span>10</span><span>50</span><span>100</span></div>
-              <div class="needle" aria-hidden="true"></div>
-              <div class="vu-label">Right</div>
+            <div class="program-stage">
+              <div class="record-fallback" aria-hidden="true">
+                <span class="record-disc"><i></i></span>
+              </div>
+              <img
+                id="program-thumbnail"
+                class="program-thumbnail"
+                alt=""
+                loading="lazy"
+                decoding="async"
+                hidden
+              >
+              <div class="video-wrap">
+                <div id="youtube-player" aria-label="YouTube video player"></div>
+              </div>
+            </div>
+
+            <div class="program-footer">
+              <div class="program-copy">
+                <span class="hardware-kicker">Selected program</span>
+                <strong id="program-track">Waiting for the library</strong>
+              </div>
+              <a
+                id="watch-video"
+                class="watch-link"
+                href="https://www.youtube.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                hidden
+              >Watch on YouTube</a>
             </div>
           </section>
 
-          <section class="media-bay" aria-label="YouTube player bay">
-            <div class="video-wrap">
-              <div id="youtube-player"></div>
+          <section class="meters" aria-label="Left and right playback-state meters" aria-describedby="meter-note">
+            <p id="meter-note" class="visually-hidden">
+              The meters move gently while playback is active; they do not analyze audio from YouTube.
+            </p>
+
+            <div class="vu-meter">
+              <div class="meter-glass">
+                <div class="meter-scale" aria-hidden="true">
+                  <span>−20</span><span>−10</span><span>−5</span><span>0</span><span>+3</span>
+                </div>
+                <span class="meter-arc" aria-hidden="true"></span>
+                <span class="needle" aria-hidden="true"></span>
+                <span class="needle-pivot" aria-hidden="true"></span>
+                <span class="vu-mark" aria-hidden="true">VU</span>
+                <span class="channel-label">Left</span>
+              </div>
             </div>
 
-            <div class="decorative-knobs" aria-hidden="true">
-              <span class="silver-knob"></span>
-              <span class="silver-knob"></span>
-              <span class="silver-knob"></span>
-              <span class="silver-knob"></span>
+            <div class="vu-meter">
+              <div class="meter-glass">
+                <div class="meter-scale" aria-hidden="true">
+                  <span>−20</span><span>−10</span><span>−5</span><span>0</span><span>+3</span>
+                </div>
+                <span class="meter-arc" aria-hidden="true"></span>
+                <span class="needle" aria-hidden="true"></span>
+                <span class="needle-pivot" aria-hidden="true"></span>
+                <span class="vu-mark" aria-hidden="true">VU</span>
+                <span class="channel-label">Right</span>
+              </div>
             </div>
           </section>
 
-          <section class="track-info" aria-live="polite">
-            <p id="status" class="status">Loading your record...</p>
-            <h2 id="track-title">Song goes here.</h2>
-            <p id="track-details">Artist and album will appear here.</p>
+          <section class="track-info glass-panel" aria-labelledby="now-playing-label">
+            <div class="track-status-line">
+              <p id="now-playing-label" class="hardware-kicker">Now playing</p>
+              <p id="status" class="status" role="status" aria-live="polite" aria-atomic="true">
+                Loading the record library…
+              </p>
+            </div>
+            <h2 id="track-title">Preparing the receiver</h2>
+            <p class="track-byline">
+              <span id="track-artist">Artist will appear here</span>
+              <span class="metadata-separator" aria-hidden="true">·</span>
+              <span id="track-album">Album will appear here</span>
+            </p>
+            <p id="track-position" class="track-position">Track information pending</p>
           </section>
 
-          <section class="track-browser" aria-labelledby="library-title">
+          <section class="controls-panel" aria-labelledby="controls-heading">
+            <h2 id="controls-heading" class="visually-hidden">Receiver controls</h2>
+
+            <div class="controls" role="group" aria-label="Playback controls">
+              <button id="previous-button" class="receiver-button" type="button" aria-label="Previous track" disabled>
+                <span class="control-icon" aria-hidden="true">▮◀</span>
+                <span class="control-label">Previous</span>
+              </button>
+
+              <button id="play-button" class="receiver-button primary" type="button" aria-label="Play current track" disabled>
+                <span id="play-icon" class="control-icon" aria-hidden="true">▶</span>
+                <span id="play-label" class="control-label">Play</span>
+              </button>
+
+              <button id="next-button" class="receiver-button" type="button" aria-label="Next track" disabled>
+                <span class="control-icon" aria-hidden="true">▶▮</span>
+                <span class="control-label">Next</span>
+              </button>
+
+              <button
+                id="shuffle-button"
+                class="receiver-button shuffle-toggle is-on"
+                type="button"
+                aria-label="Shuffle is on"
+                aria-pressed="true"
+                disabled
+              >
+                <span class="control-icon" aria-hidden="true">⇄</span>
+                <span class="control-label">Shuffle</span>
+                <span id="shuffle-state" class="control-state">On</span>
+              </button>
+            </div>
+
+            <div id="volume-panel" class="volume-panel">
+              <div class="volume-heading">
+                <span class="volume-lamp" aria-hidden="true"></span>
+                <label for="volume-control">Volume</label>
+              </div>
+              <input
+                id="volume-control"
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                value="70"
+                aria-valuetext="70 percent"
+              >
+              <output id="volume-value" for="volume-control">70%</output>
+            </div>
+          </section>
+
+          <section
+            id="record-library"
+            class="track-browser glass-panel"
+            aria-labelledby="library-title"
+            tabindex="-1"
+          >
             <div class="track-browser-header">
-              <h2 id="library-title">Record Library</h2>
-              <span id="track-count">0 tracks</span>
+              <div>
+                <p class="hardware-kicker">Catalog selector</p>
+                <h2 id="library-title">Record Library</h2>
+              </div>
+              <span id="track-count">Loading…</span>
             </div>
 
-            <label class="visually-hidden" for="track-search">Search record library</label>
-            <input
-              id="track-search"
-              type="search"
-              placeholder="Search record library"
-              autocomplete="off"
-              spellcheck="false"
+            <div class="library-tabs" role="tablist" aria-label="Browse the record library by">
+              <button
+                id="tracks-view"
+                class="library-view-button is-active"
+                type="button"
+                role="tab"
+                aria-selected="true"
+                aria-controls="library-panel"
+                data-view="tracks"
+              >Tracks</button>
+              <button
+                id="artists-view"
+                class="library-view-button"
+                type="button"
+                role="tab"
+                aria-selected="false"
+                aria-controls="library-panel"
+                data-view="artists"
+                tabindex="-1"
+              >Artists</button>
+              <button
+                id="albums-view"
+                class="library-view-button"
+                type="button"
+                role="tab"
+                aria-selected="false"
+                aria-controls="library-panel"
+                data-view="albums"
+                tabindex="-1"
+              >Albums</button>
+            </div>
+
+            <div class="track-search-wrap">
+              <label for="track-search">Search library</label>
+              <div class="search-field">
+                <input
+                  id="track-search"
+                  type="search"
+                  placeholder="Title, artist, album, or track number"
+                  autocomplete="off"
+                  spellcheck="false"
+                >
+                <button id="clear-search" type="button" aria-label="Clear library search" hidden>Clear</button>
+              </div>
+            </div>
+
+            <div class="library-context">
+              <button id="group-back-button" class="group-back-button" type="button" hidden>
+                <span aria-hidden="true">←</span> All <span id="group-back-label">groups</span>
+              </button>
+              <p id="library-context-title" class="library-context-title" hidden></p>
+            </div>
+
+            <div
+              id="library-panel"
+              class="library-panel"
+              role="tabpanel"
+              aria-labelledby="tracks-view"
+              tabindex="0"
             >
-
-            <div id="track-list" class="track-list" aria-label="Available tracks"></div>
-          </section>
-
-          <nav class="controls" aria-label="Music controls">
-            <button id="previous-button" type="button" disabled>Prev</button>
-            <button id="play-button" class="primary" type="button" disabled>Play</button>
-            <button id="next-button" type="button" disabled>Next</button>
-            <button id="shuffle-button" class="shuffle-toggle is-on" type="button" aria-pressed="true" disabled>Shuffle</button>
-          </nav>
-
-          <section class="volume-panel" aria-label="Volume control">
-            <label for="volume-control">Volume</label>
-            <input
-              id="volume-control"
-              type="range"
-              min="0"
-              max="100"
-              step="1"
-              value="70"
-            >
-            <span id="volume-value">70%</span>
+              <div id="track-list" class="track-list" role="list" aria-label="Available tracks"></div>
+              <p id="library-empty" class="library-empty" role="status" hidden></p>
+            </div>
           </section>
         </div>
       </div>
-    </section>
+    </article>
+
+    <footer class="manufacturer-footer" aria-label="Site information">
+      <div class="footer-identity">
+        <strong>Mom &amp; Pop Tunes By Dom.com</strong>
+        <span>M&amp;J Stereo Receiver</span>
+      </div>
+      <p>Curated and built by Dom <span aria-hidden="true">·</span> For Mom &amp; Dad</p>
+      <p class="footer-copyright">© <span id="copyright-year"></span></p>
+    </footer>
   </main>
 
-  <script src="app.js?v=20260727-1"></script>
-  <script src="https://www.youtube.com/iframe_api" referrerpolicy="strict-origin-when-cross-origin"></script>
+  <noscript>
+    <p class="noscript-message">JavaScript is required to operate the M&amp;J Stereo Receiver.</p>
+  </noscript>
+
+  <script src="storage-fixture.js"></script>
+  <script defer src="app.js?v=20260802-6"></script>
+  <script
+    defer
+    id="youtube-api"
+    src="mock-youtube.js?v=5"
+    referrerpolicy="strict-origin-when-cross-origin"
+  ></script>
 </body>
 </html>
