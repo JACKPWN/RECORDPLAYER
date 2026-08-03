@@ -7,16 +7,16 @@
   <meta name="theme-color" content="#17100a">
   <meta
     name="description"
-    content="A hand-curated vinyl collection played through the M&J Stereo Receiver."
+    content="Mom & Pop Tunes By Dom.com — a hand-curated vinyl collection played through the M&J Stereo Receiver."
   >
-  <title>M&J Records</title>
+  <title>MJ Records</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap"
   >
-  <link rel="stylesheet" href="styles.css?v=20260802-4">
+  <link rel="stylesheet" href="styles.css?v=20260803-5">
 </head>
 <body>
   <a class="skip-link" href="#record-library">Skip to record library</a>
@@ -84,14 +84,6 @@
                 <span class="hardware-kicker">Selected program</span>
                 <strong id="program-track">Waiting for the library</strong>
               </div>
-              <a
-                id="watch-video"
-                class="watch-link"
-                href="https://www.youtube.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                hidden
-              >Watch on YouTube</a>
             </div>
           </section>
 
@@ -205,7 +197,7 @@
                 <p class="hardware-kicker">Catalog selector</p>
                 <h2 id="library-title">Record Library</h2>
               </div>
-              <span id="track-count">Loading…</span>
+              <span id="track-count" aria-live="polite" aria-atomic="true">Loading…</span>
             </div>
 
             <div class="library-tabs" role="tablist" aria-label="Browse the record library by">
@@ -290,13 +282,12 @@
     <p class="noscript-message">JavaScript is required to operate the M&amp;J Stereo Receiver.</p>
   </noscript>
 
-  <script src="storage-fixture.js"></script>
-  <script defer src="app.js?v=20260802-6"></script>
+  <script defer src="app.js?v=20260803-2"></script>
   <script
     defer
     id="youtube-api"
-    src="mock-youtube.js?v=5"
+    src="https://www.youtube.com/iframe_api"
     referrerpolicy="strict-origin-when-cross-origin"
   ></script>
 </body>
-</html> 
+</html>
