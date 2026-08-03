@@ -150,10 +150,11 @@ input:disabled {
   border: 1px solid rgba(255, 221, 163, 0.13);
   border-radius: var(--radius-lg);
   background:
-    linear-gradient(90deg, rgba(7, 2, 1, 0.92), rgba(101, 38, 13, 0.34) 48%, rgba(8, 2, 1, 0.9)),
-    linear-gradient(rgba(82, 29, 8, 0.42), rgba(21, 6, 2, 0.72)),
+    linear-gradient(90deg, rgba(9, 3, 1, 0.72), rgba(78, 31, 14, 0.4) 48%, rgba(9, 3, 1, 0.74)),
+    linear-gradient(rgba(76, 31, 14, 0.48), rgba(29, 9, 4, 0.64)),
     url("assets/wood-texture-background.jpg") center / cover;
-  background-blend-mode: multiply, color-burn, normal;
+  background-color: #8a4a28;
+  background-blend-mode: multiply, multiply, multiply;
   box-shadow:
     var(--shadow-object),
     inset 0 0 34px rgba(0, 0, 0, 0.66),
@@ -172,12 +173,28 @@ input:disabled {
 
 .player-card::before {
   left: 0;
-  background: linear-gradient(90deg, rgba(0, 0, 0, 0.56), transparent 54%, rgba(255, 153, 74, 0.06));
+  background:
+    linear-gradient(90deg, rgba(4, 1, 0, 0.58), rgba(59, 23, 10, 0.2) 54%, rgba(136, 67, 30, 0.15)),
+    linear-gradient(180deg, rgba(78, 34, 16, 0.36), rgba(31, 10, 4, 0.52)),
+    url("assets/wood-texture-background.jpg") 20% center / cover;
+  background-color: #8a4a28;
+  background-blend-mode: multiply, multiply, multiply;
+  box-shadow:
+    inset -10px 0 13px rgba(0, 0, 0, 0.3),
+    inset -1px 0 rgba(177, 91, 40, 0.22);
 }
 
 .player-card::after {
   right: 0;
-  background: linear-gradient(270deg, rgba(0, 0, 0, 0.58), transparent 54%, rgba(255, 153, 74, 0.05));
+  background:
+    linear-gradient(270deg, rgba(4, 1, 0, 0.6), rgba(57, 22, 9, 0.22) 54%, rgba(132, 62, 27, 0.14)),
+    linear-gradient(180deg, rgba(75, 31, 14, 0.38), rgba(29, 9, 4, 0.54)),
+    url("assets/wood-texture-background.jpg") 80% center / cover;
+  background-color: #8a4a28;
+  background-blend-mode: multiply, multiply, multiply;
+  box-shadow:
+    inset 10px 0 13px rgba(0, 0, 0, 0.32),
+    inset 1px 0 rgba(173, 86, 37, 0.2);
 }
 
 .faceplate {
@@ -266,7 +283,6 @@ input:disabled {
 .channel-label,
 .meter-scale,
 .vu-mark,
-.watch-link,
 .footer-identity,
 .footer-copyright {
   font-family: var(--font-tech);
@@ -576,6 +592,7 @@ input:disabled {
 }
 
 .program-copy {
+  width: 100%;
   min-width: 0;
 }
 
@@ -590,31 +607,6 @@ input:disabled {
   line-height: 1.25;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.watch-link {
-  flex: 0 0 auto;
-  min-height: 44px;
-  padding: 9px 10px;
-  border: 1px solid rgba(243, 185, 94, 0.28);
-  border-radius: var(--radius-xs);
-  color: var(--amber-soft);
-  font-size: 0.56rem;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  text-decoration: none;
-  text-transform: uppercase;
-  transition: color var(--motion-fast), border-color var(--motion-fast), background var(--motion-fast);
-}
-
-.watch-link:hover {
-  border-color: rgba(243, 185, 94, 0.58);
-  background: var(--amber-faint);
-  color: var(--amber-bright);
-}
-
-.watch-link[hidden] {
-  display: none;
 }
 
 .meters {
@@ -1732,14 +1724,14 @@ mark.search-match {
 
   .player-card {
     width: 100%;
-    padding-inline: 10px;
+    padding-inline: 14px;
     border-inline: 0;
     border-radius: 0;
   }
 
   .player-card::before,
   .player-card::after {
-    width: 10px;
+    width: 14px;
   }
 
   .faceplate {
@@ -1896,15 +1888,6 @@ mark.search-match {
 
   .program-copy strong {
     font-size: 0.7rem;
-  }
-
-  .watch-link {
-    display: inline-grid;
-    place-items: center;
-    min-height: 44px;
-    padding-inline: 8px;
-    font-size: 0.49rem;
-    text-align: center;
   }
 
   .meters {
